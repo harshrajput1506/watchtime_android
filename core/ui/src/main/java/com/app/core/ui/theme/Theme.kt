@@ -10,15 +10,24 @@ private val DarkColorScheme = darkColorScheme(
     background = BackgroundColor,
     surface = SurfaceColor,
     onPrimary = OnPrimary,
-    onSecondary = OnSecondary
+    onSecondary = OnSecondary,
+    onBackground = OnBackground,
+    onSurface = OnSurface,
+    onSurfaceVariant = OnSurfaceVariant,
+    outline = Outline,
+    outlineVariant = OutlineVariant,
+    error = Error,
+    onError = OnError,
+    errorContainer = ErrorContainer,
+    onErrorContainer = OnErrorContainer
 )
 
 @Composable
 fun WatchTimeTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = DarkColorScheme,
-        //typography = Typography,
-       // shapes = Shapes,
+        typography = Typography,
+        shapes = Shapes,
         content = content
     )
 }

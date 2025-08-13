@@ -9,10 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +23,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.app.auth.ui.R
 import com.app.auth.ui.composables.AnimatedHeroSection
-
 
 @Composable
 fun AuthScreen() {
@@ -59,7 +58,7 @@ fun GoogleSignInButton() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(24.dp),
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         )
@@ -76,8 +75,7 @@ fun GoogleSignInButton() {
             Icon(
                 modifier = Modifier.size(20.dp),
                 painter = painterResource(
-                    R
-                        .drawable.ic_google
+                    R.drawable.ic_google
                 ),
                 contentDescription = "Google Sign-In",
                 tint = Color.Black
@@ -87,9 +85,10 @@ fun GoogleSignInButton() {
             Text(
                 text = "Continue with Google",
                 modifier = Modifier
-                    .padding(start = 8.dp)
+                    .padding(start = 16.dp)
                     .align(Alignment.CenterVertically),
-                color = Color.Black
+                color = Color.Black,
+                style = MaterialTheme.typography.titleMedium
             )
         }
 

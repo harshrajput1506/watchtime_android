@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "WatchTime"
 include(":app")
- 
+include(":auth:ui")
+include(":core:ui")

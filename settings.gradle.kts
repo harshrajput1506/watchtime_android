@@ -23,3 +23,6 @@ rootProject.name = "WatchTime"
 include(":app")
 include(":auth:ui")
 include(":core:ui")
+include(":auth:domain")
+include(":auth:data")
+include(":core:utils")

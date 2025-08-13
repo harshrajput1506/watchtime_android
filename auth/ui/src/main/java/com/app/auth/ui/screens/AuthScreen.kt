@@ -1,5 +1,6 @@
 package com.app.auth.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,11 +12,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,14 +29,42 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.app.auth.ui.R
 import com.app.auth.ui.composables.AnimatedHeroSection
+import com.app.auth.ui.states.AuthState
+import com.app.auth.ui.viewmodels.AuthViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun AuthScreen() {
+fun AuthScreen(
+    viewModel: AuthViewModel = koinViewModel()
+) {
+    val snackBarHostState = remember { SnackbarHostState() }
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackBarHostState)
+        },
         modifier = Modifier
             .fillMaxSize(),
 
         content = { innerPadding ->
+            val authState = viewModel.authState.value
+
+            if (authState is AuthState.Error) {
+                LaunchedEffect(Unit) {
+                    snackBarHostState.showSnackbar(
+                        message = authState.error,
+                        actionLabel = "Dismiss",
+                        withDismissAction = true
+                    )
+                }
+            } else if (authState is AuthState.Authenticated) {
+                LaunchedEffect(Unit) {
+                    snackBarHostState.showSnackbar(
+                        message = "Welcome ${authState.user.name}!",
+                    )
+                }
+            }
+
+
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -44,7 +78,12 @@ fun AuthScreen() {
                 Spacer(modifier = Modifier.weight(1f))
 
                 // Google Sign-In Button
-                GoogleSignInButton()
+                GoogleSignInButton(
+                    isLoading = viewModel.authState.value is AuthState.Loading,
+                    onSignIn = {
+                        viewModel.login()
+                    }
+                )
 
                 Spacer(modifier = Modifier.weight(1f))
             }
@@ -53,18 +92,23 @@ fun AuthScreen() {
 }
 
 @Composable
-fun GoogleSignInButton() {
+fun GoogleSignInButton(
+    isLoading: Boolean = false,
+    onSignIn: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable { onSignIn() },
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         )
     ) {
 
-        Row(
+
+        if (!isLoading) Row(
             modifier = Modifier
                 .padding(horizontal = 24.dp, vertical = 16.dp)
                 .fillMaxWidth(),
@@ -90,7 +134,16 @@ fun GoogleSignInButton() {
                 color = Color.Black,
                 style = MaterialTheme.typography.titleMedium
             )
-        }
+        } else
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .size(20.dp)
+                    .align(Alignment.CenterHorizontally),
+                color = MaterialTheme.colorScheme.surface,
+                strokeWidth = 2.dp
+            )
+
 
     }
 }

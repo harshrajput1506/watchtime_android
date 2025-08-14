@@ -70,7 +70,7 @@ fun AnimatedHeroSection(
                     brush = Brush.verticalGradient(
                         colors = listOf(
                             Color.Transparent,
-                            Color.Black.copy(alpha = 0.8f),
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                         )
                     )
                 ),
@@ -81,7 +81,7 @@ fun AnimatedHeroSection(
                     .fillMaxWidth()
                     .padding(16.dp),
                 text = "One place for all your watchlist dreams",
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.headlineMedium
             )
@@ -190,13 +190,15 @@ fun FadeEffect(
 ) {
     Box(
         modifier = modifier
-            .width(20.dp)
+            .width(12.dp)
             .fillMaxHeight()
             .background(
                 brush = Brush.horizontalGradient(
                     colors = listOf(
-                        if (isLeft) Color.Black.copy(alpha = 0.8f) else Color.Transparent,
-                        if (isLeft) Color.Transparent else Color.Black.copy(alpha = 0.8f)
+                        if (isLeft) MaterialTheme.colorScheme.scrim.copy(alpha = 0.6f) else Color.Transparent,
+                        if (isLeft) Color.Transparent else MaterialTheme.colorScheme.scrim.copy(
+                            alpha = 0.6f
+                        )
                     )
                 )
             )

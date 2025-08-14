@@ -24,7 +24,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.app.auth.ui.R
@@ -35,7 +34,8 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AuthScreen(
-    viewModel: AuthViewModel = koinViewModel()
+    viewModel: AuthViewModel = koinViewModel(),
+    navigateToHome: () -> Unit
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
     Scaffold(
@@ -57,11 +57,7 @@ fun AuthScreen(
                     )
                 }
             } else if (authState is AuthState.Authenticated) {
-                LaunchedEffect(Unit) {
-                    snackBarHostState.showSnackbar(
-                        message = "Welcome ${authState.user.name}!",
-                    )
-                }
+                navigateToHome()
             }
 
 
@@ -103,7 +99,7 @@ fun GoogleSignInButton(
             .clickable { onSignIn() },
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         )
     ) {
 
@@ -122,7 +118,7 @@ fun GoogleSignInButton(
                     R.drawable.ic_google
                 ),
                 contentDescription = "Google Sign-In",
-                tint = Color.Black
+                tint = MaterialTheme.colorScheme.onSurface
 
             )
 
@@ -131,7 +127,7 @@ fun GoogleSignInButton(
                 modifier = Modifier
                     .padding(start = 16.dp)
                     .align(Alignment.CenterVertically),
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleMedium
             )
         } else
@@ -140,7 +136,7 @@ fun GoogleSignInButton(
                     .padding(16.dp)
                     .size(20.dp)
                     .align(Alignment.CenterHorizontally),
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.onSurface,
                 strokeWidth = 2.dp
             )
 

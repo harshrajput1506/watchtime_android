@@ -20,6 +20,7 @@ navigationCompose = "2.9.3"
 runtime = "1.8.3"
 uiTextGoogleFonts = "1.8.3"
 jetbrainsKotlinJvm = "2.2.0"
+runtimeVersion = "1.9.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -60,6 +61,7 @@ androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", versi
 # Animation dependencies (using compose BOM version)
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation" }
 androidx-compose-animation-core = { group = "androidx.compose.animation", name = "animation-core" }
+runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtimeVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

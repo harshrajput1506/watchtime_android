@@ -13,7 +13,6 @@ val authDataModule = module {
         GetGoogleIdOption.Builder()
             .setServerClientId(get<Context>().getString(R.string.default_web_client_id))
             .setFilterByAuthorizedAccounts(false)
-            .setAutoSelectEnabled(true)
             .build()
     }
 

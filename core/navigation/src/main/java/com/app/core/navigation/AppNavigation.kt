@@ -18,7 +18,13 @@ fun AppNavigation() {
         }
 
         composable<Screen.Auth> {
-            AuthScreen()
+            AuthScreen {
+                navController.navigate(Screen.Home) {
+                    popUpTo(Screen.Auth) {
+                        inclusive = true
+                    }
+                }
+            }
         }
     }
 }

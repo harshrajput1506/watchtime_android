@@ -41,10 +41,10 @@ android {
 }
 
 dependencies {
-
-    implementation(project(":auth:ui"))
     implementation(project(":core:ui"))
     implementation(project(":auth:data"))
+    implementation(project(":core:navigation"))
+    implementation(project(":auth:ui"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

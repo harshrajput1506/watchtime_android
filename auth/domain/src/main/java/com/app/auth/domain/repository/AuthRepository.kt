@@ -4,7 +4,7 @@ import com.app.auth.domain.entities.UserEntity
 
 interface AuthRepository {
     suspend fun login(): UserEntity
-    fun logout(): Boolean
+    suspend fun logout(): Boolean
     fun isLoggedIn(): Boolean
     fun getCurrentUser(): UserEntity?
 }

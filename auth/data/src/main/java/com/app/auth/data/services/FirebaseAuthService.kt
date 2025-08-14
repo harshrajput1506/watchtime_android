@@ -2,6 +2,7 @@ package com.app.auth.data.services
 
 import android.content.Context
 import android.util.Log
+import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.Credential
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -75,6 +76,25 @@ class FirebaseAuthService(
 
         return result.user
 
+    }
+
+    suspend fun signOut() {
+        try {
+            auth.signOut()
+            val clearRequest = ClearCredentialStateRequest()
+            credentialManager.clearCredentialState(clearRequest)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error signing out: ${e.localizedMessage}")
+            throw Failure.AuthenticationError("Failed to sign out")
+        }
+    }
+
+    fun isLoggedIn(): Boolean {
+        return auth.currentUser != null
+    }
+
+    fun getCurrentUser(): FirebaseUser? {
+        return auth.currentUser
     }
 
 }

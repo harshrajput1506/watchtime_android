@@ -1,5 +1,6 @@
 package com.app.auth.data.repository
 
+import android.util.Log
 import com.app.auth.data.services.FirebaseAuthService
 import com.app.auth.domain.entities.UserEntity
 import com.app.auth.domain.repository.AuthRepository
@@ -42,16 +43,45 @@ class AuthRepositoryImpl(
 
     }
 
-    override fun logout(): Boolean {
-        TODO("Not yet implemented")
+    override suspend fun logout(): Boolean {
+        try {
+            authService.signOut()
+            return true
+        } catch (e: Exception) {
+            // Log the error or handle it as needed
+            Log.e(TAG, "logout: ", e)
+            return false
+        }
     }
 
     override fun isLoggedIn(): Boolean {
-        TODO("Not yet implemented")
+        try {
+            return authService.isLoggedIn()
+        } catch (e: Exception) {
+            // Log the error or handle it as needed
+            Log.e(TAG, "isLoggedIn: e", e)
+            return false
+        }
     }
 
     override fun getCurrentUser(): UserEntity? {
-        TODO("Not yet implemented")
+        try {
+            val user = authService.getCurrentUser()
+            return if (user != null) {
+                UserEntity(
+                    id = user.uid,
+                    name = user.displayName ?: "Unknown",
+                    email = user.email ?: "No Email",
+                    profilePictureUrl = user.photoUrl?.toString(),
+                )
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            // Log the error or handle it as needed
+            Log.e(TAG, "getCurrentUser: e", e)
+            return null
+        }
     }
 
 

@@ -1,28 +1,39 @@
 package com.app.core.home
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun HomeScreen() {
+    val navController = rememberNavController()
+    val currentRoute =
+        navController.currentBackStackEntryAsState().value?.destination?.route
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            BottomNavigationBar(
+                selected = currentRoute ?: HomeDestination.Popular.toString(),
+                onItemClick = { destination ->
+                    navController.navigate(destination) {
+                        popUpTo(HomeDestination.Popular) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
 
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier.padding(innerPadding),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "Welcome to the Home Screen",
-                modifier = Modifier.padding(16.dp)
-            )
+                    }
+                })
         }
+    ) { innerPadding ->
 
+        HomeNavigation(
+            modifier = Modifier.padding(innerPadding),
+            navController = navController
+        )
     }
 }

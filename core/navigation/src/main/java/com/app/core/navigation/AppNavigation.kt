@@ -11,7 +11,7 @@ import com.app.core.home.HomeScreen
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = Screen.Auth) {
+    NavHost(navController = navController, startDestination = Screen.Home) {
 
         composable<Screen.Home> {
             HomeScreen()

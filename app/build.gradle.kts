@@ -45,12 +45,18 @@ dependencies {
     implementation(project(":auth:data"))
     implementation(project(":core:navigation"))
     implementation(project(":auth:ui"))
+    implementation(project(":core:network"))
+
+    // popular modules
+    implementation(project(":popular:data"))
+    implementation(project(":popular:ui"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
+    implementation(libs.androidx.foundation)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)

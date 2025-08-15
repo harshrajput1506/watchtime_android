@@ -35,10 +35,17 @@ android {
 
 dependencies {
 
+    // domain module
+    implementation(project(":popular:domain"))
+
+    // core utils
+    implementation(project(":core:utils"))
+    implementation(project(":core:ui"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.runtime)
+    implementation(libs.androidx.runtime)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -48,10 +55,18 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
+    implementation(libs.androidx.foundation)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
     // coil
     implementation(libs.coil.compose)
+
+    // koin compose
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.androidx.viewmodel)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.android)
+    implementation(libs.koin.core)
 }

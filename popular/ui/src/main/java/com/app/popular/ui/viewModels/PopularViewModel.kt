@@ -3,6 +3,8 @@ package com.app.popular.ui.viewModels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.auth.domain.entities.UserEntity
+import com.app.auth.domain.repository.AuthRepository
 import com.app.core.utils.failures.Failure
 import com.app.popular.domain.repository.PopularRepository
 import com.app.popular.ui.states.PopularMovieState
@@ -17,11 +19,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class PopularViewModel(
-    private val popularRepository: PopularRepository
+    private val popularRepository: PopularRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _popularState = MutableStateFlow(PopularState())
     val popularState get() = _popularState.asStateFlow()
+    val user: UserEntity? get() = authRepository.getCurrentUser()
+
 
     init {
         fetchPopularMovies()

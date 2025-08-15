@@ -1,20 +1,30 @@
 package com.app.popular.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.app.auth.domain.entities.UserEntity
+import com.app.popular.ui.R
 import com.app.popular.ui.composables.MediaSection
 import com.app.popular.ui.states.PopularMovieState
 import com.app.popular.ui.states.PopularTvShowState
@@ -27,8 +37,10 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun PopularScreen(
-    viewModel: PopularViewModel = koinViewModel()
-) {
+    viewModel: PopularViewModel = koinViewModel(),
+    onNavigateToDiscover: () -> Unit = {},
+
+    ) {
     val scrollState = rememberScrollState()
     val state = viewModel.popularState.collectAsState()
     val trendingDailyState = state.value.trendingDailyState
@@ -47,7 +59,11 @@ fun PopularScreen(
                 .verticalScroll(state = scrollState)
         ) {
             // App Bar
-            UserDisplayBar()
+            viewModel.user?.let {
+                UserDisplayBar(it) {
+                    onNavigateToDiscover()
+                }
+            }
 
             // Trending Section
             MediaSection(
@@ -132,22 +148,49 @@ fun PopularScreen(
 }
 
 @Composable
-fun UserDisplayBar() {
-    Column(
-        modifier = Modifier.padding(24.dp)
+fun UserDisplayBar(
+    user: UserEntity,
+    onSearchClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 24.dp, vertical = 32.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            "Hello \uD83D\uDC4B", style = MaterialTheme.typography.titleMedium.copy(
-                color = MaterialTheme.colorScheme.onSurface
+        Column(
+            modifier = Modifier.weight(0.8f)
+        ) {
+            Text(
+                "Hello \uD83D\uDC4B", style = MaterialTheme.typography.titleMedium.copy(
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             )
-        )
-        Text(
-            "Harsh Rajput", style = MaterialTheme.typography.displaySmall.copy(
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            ),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+            Text(
+                text = user.name ?: "User",
+                style = MaterialTheme.typography.displaySmall.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                ),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+
+        }
+
+
+        IconButton(
+            modifier = Modifier.weight(0.2f),
+            onClick = onSearchClick
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_search),
+                contentDescription = "Search",
+                modifier = Modifier.size(24.dp)
+            )
+        }
+
 
     }
+
 }

@@ -55,4 +55,8 @@ dependencies {
     // JSON serialization library, works with the Kotlin serialization plugin
     implementation(libs.kotlinx.serialization.json)
 
+    // koin
+    implementation(libs.koin.androidx.viewmodel)
+    implementation(libs.koin.androidx.compose)
+
 }

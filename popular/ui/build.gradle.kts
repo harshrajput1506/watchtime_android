@@ -37,6 +37,7 @@ dependencies {
 
     // domain module
     implementation(project(":popular:domain"))
+    implementation(project(":auth:domain"))
 
     // core utils
     implementation(project(":core:utils"))

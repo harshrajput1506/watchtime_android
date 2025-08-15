@@ -14,6 +14,15 @@ class AuthViewModel(
     private val _authState = mutableStateOf<AuthState>(AuthState.Unauthenticated)
     val authState get() = _authState
 
+    init {
+        val user = authRepository.getCurrentUser()
+        if (user != null) {
+            _authState.value = AuthState.Authenticated(user)
+        } else {
+            _authState.value = AuthState.Unauthenticated
+        }
+    }
+
     fun login() {
         _authState.value = AuthState.Loading
         viewModelScope.launch {

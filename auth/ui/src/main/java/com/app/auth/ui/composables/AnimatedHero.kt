@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.app.core.network.util.ImageUrlBuilder
 
 @Composable
 fun AnimatedHeroSection(
@@ -99,7 +100,6 @@ private fun AnimatedMovieRow(
     posterSpacing: Dp
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "movie_row_$rowIndex")
-    val imageBaseUrl = "https://image.tmdb.org/t/p/w600_and_h900_bestv2/"
 
     // Different speeds per row for variety
     val durationMillis = when (rowIndex) {
@@ -142,7 +142,9 @@ private fun AnimatedMovieRow(
                     repeat(7) { setIndex ->
                         posters.forEach { posterRes ->
                             MoviePoster(
-                                imageUrl = "$imageBaseUrl$posterRes",
+                                imageUrl = ImageUrlBuilder.buildPosterUrl(
+                                    posterRes,
+                                ),
                                 width = posterWidth,
                                 height = rowHeight
                             )
@@ -207,7 +209,7 @@ fun FadeEffect(
 
 @Composable
 private fun MoviePoster(
-    imageUrl: String,
+    imageUrl: String?,
     width: Dp,
     height: Dp,
     modifier: Modifier = Modifier
@@ -228,33 +230,32 @@ private fun MoviePoster(
     }
 }
 
-
 private fun posters(): Map<Int, List<String>> {
 
     return mapOf(
         1 to listOf(
-            "cpf7vsRZ0MYRQcnLWteD5jK9ymT.jpg",
-            "aFRDH3P7TX61FVGpaLhKr6QiOC1.jpg",
-            "cMD9Ygz11zjJzAovURpO75Qg7rT.jpg",
-            "36xXlhEpQqVVPuiZhfoQuaY4OlA.jpg",
-            "apUF4pkFmrzmUJvkxEmMCPnhd4t.jpg",
-            "iyxwxDZCpIm0vIORaHpmgJv2BGF.jpg"
+            "/cpf7vsRZ0MYRQcnLWteD5jK9ymT.jpg",
+            "/aFRDH3P7TX61FVGpaLhKr6QiOC1.jpg",
+            "/cMD9Ygz11zjJzAovURpO75Qg7rT.jpg",
+            "/36xXlhEpQqVVPuiZhfoQuaY4OlA.jpg",
+            "/apUF4pkFmrzmUJvkxEmMCPnhd4t.jpg",
+            "/iyxwxDZCpIm0vIORaHpmgJv2BGF.jpg"
         ),
         2 to listOf(
-            "bR8ISy1O9XQxqiy0fQFw2BX72RQ.jpg",
-            "ombsmhYUqR4qqOLOxAyr5V8hbyv.jpg",
-            "gh4cZbhZxyTbgxQPxD0dOudNPTn.jpg",
-            "4kh9dxAiClS2GMUpkRyzGwpNWWX.jpg",
-            "8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
-            "KoYWXbnYuS3b0GyQPkbuexlVK9.jpg"
+            "/bR8ISy1O9XQxqiy0fQFw2BX72RQ.jpg",
+            "/ombsmhYUqR4qqOLOxAyr5V8hbyv.jpg",
+            "/gh4cZbhZxyTbgxQPxD0dOudNPTn.jpg",
+            "/4kh9dxAiClS2GMUpkRyzGwpNWWX.jpg",
+            "/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
+            "/KoYWXbnYuS3b0GyQPkbuexlVK9.jpg"
         ),
         3 to listOf(
-            "iiZZdoQBEYBv6id8su7ImL0oCbD.jpg",
-            "1RICxzeoNCAO5NpcRMIgg1XT6fm.jpg",
-            "u5VJ1XmPRUWNz9l0mP2rHmkUuvQ.jpg",
-            "jSziioSwPVrOy9Yow3XhWIBDjq1.jpg",
-            "b1RBy3l297N0c7PHjlz35cClWju.jpg",
-            "84LdrRRvpWk8g0EaaW7z3eKdfum.jpg"
+            "/iiZZdoQBEYBv6id8su7ImL0oCbD.jpg",
+            "/1RICxzeoNCAO5NpcRMIgg1XT6fm.jpg",
+            "/u5VJ1XmPRUWNz9l0mP2rHmkUuvQ.jpg",
+            "/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg",
+            "/b1RBy3l297N0c7PHjlz35cClWju.jpg",
+            "/84LdrRRvpWk8g0EaaW7z3eKdfum.jpg"
 
         )
     )

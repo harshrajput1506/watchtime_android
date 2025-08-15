@@ -41,6 +41,7 @@ dependencies {
 
     implementation(project(":auth:domain"))
     implementation(project(":core:utils"))
+    implementation(project(":core:network"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

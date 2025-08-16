@@ -59,6 +59,9 @@ class DiscoverViewModel(
         _uiState.value = _uiState.value.copy(selectedMediaType = index)
         if (!_uiState.value.isSearchMode) {
             loadDiscoverContent()
+        } else {
+            // If in search mode, perform search with the current query
+            performSearch(_uiState.value.searchQuery)
         }
     }
 
@@ -161,7 +164,7 @@ class DiscoverViewModel(
                         hasMorePages = newMovies.isNotEmpty()
                     )
                 )
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 _uiState.value = _uiState.value.copy(
                     discoverMoviesState = currentState.copy(isLoadingMore = false)
                 )
@@ -196,7 +199,7 @@ class DiscoverViewModel(
                         hasMorePages = newTvShows.isNotEmpty()
                     )
                 )
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 _uiState.value = _uiState.value.copy(
                     discoverTvShowsState = currentState.copy(isLoadingMore = false)
                 )
@@ -235,7 +238,7 @@ class DiscoverViewModel(
                         hasMorePages = newResults.isNotEmpty()
                     )
                 )
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 _uiState.value = _uiState.value.copy(
                     searchState = currentState.copy(isLoadingMore = false)
                 )
@@ -253,6 +256,7 @@ class DiscoverViewModel(
                     1 -> discoverRepository.searchTvShows(query)
                     else -> discoverRepository.searchMulti(query)
                 }
+
 
                 _uiState.value = _uiState.value.copy(
                     searchState = SearchState.Success(

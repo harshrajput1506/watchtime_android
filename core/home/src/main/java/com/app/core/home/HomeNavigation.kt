@@ -20,7 +20,9 @@ fun HomeNavigation(
 ) {
     NavHost(navController = navController, startDestination = HomeDestination.Popular) {
         composable<HomeDestination.Popular> {
-            PopularScreen {
+            PopularScreen(
+                modifier = modifier
+            ) {
                 navController.navigate(HomeDestination.Discover) {
                     popUpTo(HomeDestination.Popular) {
                         inclusive = false
@@ -30,7 +32,9 @@ fun HomeNavigation(
         }
         composable<HomeDestination.Discover> {
 
-            DiscoverScreen {
+            DiscoverScreen(
+                modifier = modifier
+            ) {
 
             }
         }

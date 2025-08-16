@@ -25,10 +25,11 @@ import com.app.discover.ui.R
 
 @Composable
 fun DiscoverSearchBar(
+    modifier: Modifier = Modifier,
+    label: String = "Search",
     query: String,
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -43,7 +44,7 @@ fun DiscoverSearchBar(
             modifier = Modifier.fillMaxWidth(),
             textStyle = MaterialTheme.typography.bodyLarge,
             placeholder = {
-                Text("Search")
+                Text(label)
             },
             leadingIcon = {
                 Icon(

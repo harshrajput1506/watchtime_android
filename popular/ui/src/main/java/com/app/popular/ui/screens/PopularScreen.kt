@@ -37,6 +37,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun PopularScreen(
+    modifier: Modifier = Modifier,
     viewModel: PopularViewModel = koinViewModel(),
     onNavigateToDiscover: () -> Unit = {},
 
@@ -50,20 +51,24 @@ fun PopularScreen(
     val topRatedMoviesState = state.value.topRatedMovieState
     val topRatedTvState = state.value.topRatedTvShowState
     Scaffold(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(top = paddingValues.calculateTopPadding())
                 .verticalScroll(state = scrollState)
         ) {
+
+
             // App Bar
             viewModel.user?.let {
                 UserDisplayBar(it) {
                     onNavigateToDiscover()
                 }
             }
+
+            Spacer(Modifier.height(16.dp))
 
             // Trending Section
             MediaSection(
@@ -140,9 +145,6 @@ fun PopularScreen(
                 }
             )
 
-
-            // Add some spacing at the bottom to ensure scrolling works
-            Spacer(modifier = Modifier.height(100.dp))
         }
     }
 }
@@ -154,7 +156,7 @@ fun UserDisplayBar(
 ) {
     Row(
         modifier = Modifier
-            .padding(horizontal = 24.dp, vertical = 32.dp)
+            .padding(16.dp)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween

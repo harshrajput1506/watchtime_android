@@ -1,4 +1,4 @@
-package com.app.popular.domain.entities
+package com.app.core.domain.entities
 
 data class Media(
     val id: Int,
@@ -10,10 +10,10 @@ data class Media(
     val voteAverage: Double,
     val voteCount: Int,
     val popularity: Double,
-    val type: MediaTYpe
+    val type: MediaType
 )
 
-enum class MediaTYpe {
+enum class MediaType {
     MOVIE,
     TV
 }

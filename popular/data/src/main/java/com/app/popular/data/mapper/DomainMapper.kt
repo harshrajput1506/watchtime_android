@@ -1,11 +1,11 @@
 package com.app.popular.data.mapper
 
+import com.app.core.domain.entities.Media
+import com.app.core.domain.entities.MediaType
 import com.app.core.network.model.MediaResponse
 import com.app.core.network.model.MovieResponse
 import com.app.core.network.model.TvShowResponse
 import com.app.core.network.util.ImageUrlBuilder
-import com.app.popular.domain.entities.Media
-import com.app.popular.domain.entities.MediaTYpe
 
 fun MovieResponse.toDomain(): Media {
     return Media(
@@ -18,7 +18,7 @@ fun MovieResponse.toDomain(): Media {
         voteAverage = voteAverage,
         voteCount = voteCount,
         popularity = popularity,
-        type = MediaTYpe.MOVIE
+        type = MediaType.MOVIE
     )
 }
 
@@ -33,7 +33,7 @@ fun TvShowResponse.toDomain(): Media {
         voteAverage = voteAverage,
         voteCount = voteCount,
         popularity = popularity,
-        type = MediaTYpe.TV
+        type = MediaType.TV
     )
 }
 
@@ -49,6 +49,6 @@ fun MediaResponse.toDomain(): Media {
         voteAverage = voteAverage,
         voteCount = voteCount,
         popularity = popularity,
-        type = if (mediaType == "movie") MediaTYpe.MOVIE else MediaTYpe.TV
+        type = if (mediaType == "movie") MediaType.MOVIE else MediaType.TV
     )
 }

@@ -51,6 +51,10 @@ dependencies {
     implementation(project(":popular:data"))
     implementation(project(":popular:ui"))
 
+    // discover modules
+    implementation(project(":discover:data"))
+    implementation(project(":discover:ui"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

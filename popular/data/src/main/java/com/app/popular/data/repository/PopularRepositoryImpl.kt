@@ -1,10 +1,10 @@
 package com.app.popular.data.repository
 
 import android.util.Log
+import com.app.core.domain.entities.Media
 import com.app.core.network.util.NetworkResult
 import com.app.core.utils.failures.Failure
 import com.app.popular.data.data_source.RemoteDataSource
-import com.app.popular.domain.entities.Media
 import com.app.popular.domain.repository.PopularRepository
 
 class PopularRepositoryImpl(

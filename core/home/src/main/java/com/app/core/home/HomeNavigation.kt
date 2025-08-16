@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.app.discover.ui.screens.DiscoverScreen
 import com.app.popular.ui.screens.PopularScreen
 import kotlinx.serialization.Serializable
 
@@ -29,7 +30,9 @@ fun HomeNavigation(
         }
         composable<HomeDestination.Discover> {
 
-            DemoScreen(modifier, "Discover Screen")
+            DiscoverScreen {
+
+            }
         }
         composable<HomeDestination.Collections> {
             DemoScreen(modifier, "Collections Screen")

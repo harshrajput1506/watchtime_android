@@ -52,4 +52,62 @@ interface TMDBApiService {
         @Query("language") language: String = "en-US"
     ): TvShowsListResponse
 
+    // Discover endpoints
+    @GET("discover/movie")
+    suspend fun discoverMovies(
+        @Header("Authorization") authorization: String = "Bearer ${Constants.TMDB_API_KEY}",
+        @Query("page") page: Int = 1,
+        @Query("language") language: String = "en-US",
+        @Query("sort_by") sortBy: String = "popularity.desc",
+        @Query("include_adult") includeAdult: Boolean = false,
+        @Query("include_video") includeVideo: Boolean = false,
+        @Query("with_genres") withGenres: String? = null,
+        @Query("year") year: Int? = null,
+        @Query("vote_average.gte") voteAverageGte: Float? = null,
+        @Query("vote_average.lte") voteAverageLte: Float? = null
+    ): MoviesListResponse
+
+    @GET("discover/tv")
+    suspend fun discoverTvShows(
+        @Header("Authorization") authorization: String = "Bearer ${Constants.TMDB_API_KEY}",
+        @Query("page") page: Int = 1,
+        @Query("language") language: String = "en-US",
+        @Query("sort_by") sortBy: String = "popularity.desc",
+        @Query("include_adult") includeAdult: Boolean = false,
+        @Query("with_genres") withGenres: String? = null,
+        @Query("first_air_date_year") year: Int? = null,
+        @Query("vote_average.gte") voteAverageGte: Float? = null,
+        @Query("vote_average.lte") voteAverageLte: Float? = null
+    ): TvShowsListResponse
+
+    // Search endpoints
+    @GET("search/multi")
+    suspend fun searchMulti(
+        @Header("Authorization") authorization: String = "Bearer ${Constants.TMDB_API_KEY}",
+        @Query("query") query: String,
+        @Query("page") page: Int = 1,
+        @Query("language") language: String = "en-US",
+        @Query("include_adult") includeAdult: Boolean = false
+    ): MediaListResponse
+
+    @GET("search/movie")
+    suspend fun searchMovies(
+        @Header("Authorization") authorization: String = "Bearer ${Constants.TMDB_API_KEY}",
+        @Query("query") query: String,
+        @Query("page") page: Int = 1,
+        @Query("language") language: String = "en-US",
+        @Query("include_adult") includeAdult: Boolean = false,
+        @Query("year") year: Int? = null
+    ): MoviesListResponse
+
+    @GET("search/tv")
+    suspend fun searchTvShows(
+        @Header("Authorization") authorization: String = "Bearer ${Constants.TMDB_API_KEY}",
+        @Query("query") query: String,
+        @Query("page") page: Int = 1,
+        @Query("language") language: String = "en-US",
+        @Query("include_adult") includeAdult: Boolean = false,
+        @Query("first_air_date_year") year: Int? = null
+    ): TvShowsListResponse
+
 }

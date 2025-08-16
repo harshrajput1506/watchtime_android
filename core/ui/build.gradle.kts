@@ -35,6 +35,9 @@ android {
 
 dependencies {
 
+    // Core modules
+    implementation(project(":core:domain"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -52,4 +55,8 @@ dependencies {
     implementation(libs.androidx.material3)
 
     implementation(libs.androidx.ui.text.google.fonts)
+    
+    // coil for image loading
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 }

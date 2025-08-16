@@ -37,6 +37,7 @@ android {
 dependencies {
 
     implementation(project(":popular:ui"))
+    implementation(project(":discover:ui"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

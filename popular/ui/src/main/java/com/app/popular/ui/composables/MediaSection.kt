@@ -10,9 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,7 +19,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.app.popular.domain.entities.Media
+import com.app.core.domain.entities.Media
+import com.app.core.ui.composables.MediaChoiceRow
 
 
 @Composable
@@ -107,26 +105,3 @@ fun MediaSection(
     }
 }
 
-
-@Composable
-fun MediaChoiceRow(
-    options: List<String> = listOf("Movies", "TV"),
-    selectedIndex: Int = 0,
-    onOptionSelected: (Int) -> Unit
-) {
-    SingleChoiceSegmentedButtonRow {
-        options.forEachIndexed { index, label ->
-            SegmentedButton(
-                shape = SegmentedButtonDefaults.itemShape(
-                    index = index,
-                    count = options.size
-                ),
-                onClick = {
-                    onOptionSelected(index)
-                },
-                selected = index == selectedIndex,
-                label = { Text(label, style = MaterialTheme.typography.labelMedium) }
-            )
-        }
-    }
-}

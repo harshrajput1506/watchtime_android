@@ -1,6 +1,6 @@
 package com.app.popular.ui.states
 
-import com.app.popular.domain.entities.Media
+import com.app.core.domain.entities.Media
 
 data class PopularState(
     val popularMovieState: PopularMovieState = PopularMovieState.Empty,

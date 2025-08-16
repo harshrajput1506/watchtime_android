@@ -34,14 +34,13 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 
+    // Project dependencies
+    implementation(project(":core:network"))
+    implementation(project(":media:domain"))
 
     // UI dependencies
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -54,13 +53,23 @@ dependencies {
     implementation(libs.androidx.material3)
 
 
-    // coil
-    implementation(libs.coil.compose)
-
+    // Koin DI
     // koin compose
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.androidx.viewmodel)
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.android)
     implementation(libs.koin.core)
+
+    // Coil for image loading
+    implementation(libs.coil.compose)
+
+
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 }

@@ -46,7 +46,9 @@ fun AppNavigation(
 
         composable<Screen.MediaDetails> { backStackEntry ->
             val screen = backStackEntry.toRoute<Screen.MediaDetails>()
-            MediaDetailsScreen(screen.id, screen.type)
+            MediaDetailsScreen(screen.id, screen.type, onNavigateBack = {
+                navController.popBackStack()
+            })
         }
     }
 }

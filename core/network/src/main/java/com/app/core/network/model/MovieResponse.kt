@@ -129,3 +129,281 @@ data class TvShowsListResponse(
     @SerialName("total_results")
     val totalResults: Int
 )
+
+// Media Details Response Models
+@Serializable
+data class GenreResponse(
+    val id: Int,
+    val name: String
+)
+
+@Serializable
+data class ProductionCompany(
+    val id: Int,
+    val name: String,
+    @SerialName("logo_path")
+    val logoPath: String?,
+    @SerialName("origin_country")
+    val originCountry: String
+)
+
+@Serializable
+data class ProductionCountry(
+    @SerialName("iso_3166_1")
+    val iso31661: String,
+    val name: String
+)
+
+@Serializable
+data class SpokenLanguage(
+    @SerialName("english_name")
+    val englishName: String,
+    @SerialName("iso_639_1")
+    val iso6391: String,
+    val name: String
+)
+
+@Serializable
+data class MovieDetailsResponse(
+    val id: Int,
+    val title: String,
+    val overview: String,
+    @SerialName("poster_path")
+    val posterPath: String?,
+    @SerialName("backdrop_path")
+    val backdropPath: String?,
+    @SerialName("release_date")
+    val releaseDate: String,
+    @SerialName("vote_average")
+    val voteAverage: Double,
+    @SerialName("vote_count")
+    val voteCount: Int,
+    val popularity: Double,
+    val runtime: Int?,
+    val budget: Long,
+    val revenue: Long,
+    val genres: List<GenreResponse>,
+    @SerialName("production_companies")
+    val productionCompanies: List<ProductionCompany>,
+    @SerialName("production_countries")
+    val productionCountries: List<ProductionCountry>,
+    @SerialName("spoken_languages")
+    val spokenLanguages: List<SpokenLanguage>,
+    val status: String,
+    val tagline: String?,
+    @SerialName("original_title")
+    val originalTitle: String,
+    @SerialName("original_language")
+    val originalLanguage: String,
+    val adult: Boolean,
+    val video: Boolean,
+    @SerialName("imdb_id")
+    val imdbId: String?,
+    val homepage: String?
+)
+
+@Serializable
+data class NetworkResponse(
+    val id: Int,
+    val name: String,
+    @SerialName("logo_path")
+    val logoPath: String?,
+    @SerialName("origin_country")
+    val originCountry: String
+)
+
+@Serializable
+data class SeasonResponse(
+    @SerialName("air_date")
+    val airDate: String?,
+    @SerialName("episode_count")
+    val episodeCount: Int,
+    val id: Int,
+    val name: String,
+    val overview: String,
+    @SerialName("poster_path")
+    val posterPath: String?,
+    @SerialName("season_number")
+    val seasonNumber: Int,
+    @SerialName("vote_average")
+    val voteAverage: Double
+)
+
+@Serializable
+data class CreatedBy(
+    val id: Int,
+    @SerialName("credit_id")
+    val creditId: String,
+    val name: String,
+    val gender: Int,
+    @SerialName("profile_path")
+    val profilePath: String?
+)
+
+@Serializable
+data class TvShowDetailsResponse(
+    val id: Int,
+    val name: String,
+    val overview: String,
+    @SerialName("poster_path")
+    val posterPath: String?,
+    @SerialName("backdrop_path")
+    val backdropPath: String?,
+    @SerialName("first_air_date")
+    val firstAirDate: String,
+    @SerialName("last_air_date")
+    val lastAirDate: String?,
+    @SerialName("vote_average")
+    val voteAverage: Double,
+    @SerialName("vote_count")
+    val voteCount: Int,
+    val popularity: Double,
+    @SerialName("number_of_episodes")
+    val numberOfEpisodes: Int,
+    @SerialName("number_of_seasons")
+    val numberOfSeasons: Int,
+    @SerialName("episode_run_time")
+    val episodeRunTime: List<Int>,
+    val genres: List<GenreResponse>,
+    @SerialName("production_companies")
+    val productionCompanies: List<ProductionCompany>,
+    @SerialName("production_countries")
+    val productionCountries: List<ProductionCountry>,
+    @SerialName("spoken_languages")
+    val spokenLanguages: List<SpokenLanguage>,
+    val status: String,
+    val tagline: String?,
+    @SerialName("original_name")
+    val originalName: String,
+    @SerialName("original_language")
+    val originalLanguage: String,
+    val adult: Boolean,
+    val homepage: String?,
+    @SerialName("in_production")
+    val inProduction: Boolean,
+    val networks: List<NetworkResponse>,
+    @SerialName("created_by")
+    val createdBy: List<CreatedBy>,
+    val seasons: List<SeasonResponse>,
+    @SerialName("origin_country")
+    val originCountry: List<String>
+)
+
+// Cast and Crew Models
+@Serializable
+data class CastMemberResponse(
+    val id: Int,
+    val name: String,
+    @SerialName("profile_path")
+    val profilePath: String?,
+    val character: String,
+    @SerialName("credit_id")
+    val creditId: String,
+    val order: Int,
+    val gender: Int?,
+    @SerialName("known_for_department")
+    val knownForDepartment: String,
+    @SerialName("original_name")
+    val originalName: String,
+    val popularity: Double,
+    val adult: Boolean
+)
+
+@Serializable
+data class CrewMemberResponse(
+    val id: Int,
+    val name: String,
+    @SerialName("profile_path")
+    val profilePath: String?,
+    val job: String,
+    val department: String,
+    @SerialName("credit_id")
+    val creditId: String,
+    val gender: Int?,
+    @SerialName("known_for_department")
+    val knownForDepartment: String,
+    @SerialName("original_name")
+    val originalName: String,
+    val popularity: Double,
+    val adult: Boolean
+)
+
+@Serializable
+data class CreditsResponse(
+    val id: Int,
+    val cast: List<CastMemberResponse>,
+    val crew: List<CrewMemberResponse>
+)
+
+// Watch Providers Models
+@Serializable
+data class WatchProviderResponse(
+    @SerialName("logo_path")
+    val logoPath: String,
+    @SerialName("provider_id")
+    val providerId: Int,
+    @SerialName("provider_name")
+    val providerName: String,
+    @SerialName("display_priority")
+    val displayPriority: Int
+)
+
+@Serializable
+data class CountryWatchProvidersResponse(
+    val link: String?,
+    @SerialName("flatrate")
+    val flatRate: List<WatchProviderResponse>? = null,
+    val buy: List<WatchProviderResponse>? = null,
+    val rent: List<WatchProviderResponse>? = null
+)
+
+@Serializable
+data class WatchProvidersResponse(
+    val id: Int,
+    val results: Map<String, CountryWatchProvidersResponse>
+)
+
+// Season Details Models
+@Serializable
+data class EpisodeResponse(
+    @SerialName("air_date")
+    val airDate: String?,
+    @SerialName("episode_number")
+    val episodeNumber: Int,
+    val id: Int,
+    val name: String,
+    val overview: String,
+    @SerialName("production_code")
+    val productionCode: String?,
+    val runtime: Int?,
+    @SerialName("season_number")
+    val seasonNumber: Int,
+    @SerialName("show_id")
+    val showId: Int,
+    @SerialName("still_path")
+    val stillPath: String?,
+    @SerialName("vote_average")
+    val voteAverage: Double,
+    @SerialName("vote_count")
+    val voteCount: Int,
+    val crew: List<CrewMemberResponse>,
+    @SerialName("guest_stars")
+    val guestStars: List<CastMemberResponse>
+)
+
+@Serializable
+data class SeasonDetailsResponse(
+    @SerialName("_id")
+    val id: String,
+    @SerialName("air_date")
+    val airDate: String?,
+    val episodes: List<EpisodeResponse>,
+    val name: String,
+    val overview: String,
+    @SerialName("poster_path")
+    val posterPath: String?,
+    @SerialName("season_number")
+    val seasonNumber: Int,
+    @SerialName("vote_average")
+    val voteAverage: Double
+)

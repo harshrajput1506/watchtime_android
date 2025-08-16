@@ -41,11 +41,16 @@ android {
 }
 
 dependencies {
+
+    // core modules
     implementation(project(":core:ui"))
-    implementation(project(":auth:data"))
     implementation(project(":core:navigation"))
-    implementation(project(":auth:ui"))
     implementation(project(":core:network"))
+
+    // ui modules
+    implementation(project(":auth:ui"))
+    implementation(project(":auth:data"))
+
 
     // popular modules
     implementation(project(":popular:data"))
@@ -54,6 +59,10 @@ dependencies {
     // discover modules
     implementation(project(":discover:data"))
     implementation(project(":discover:ui"))
+
+    // media modules
+    implementation(project(":media:data"))
+    implementation(project(":media:ui"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

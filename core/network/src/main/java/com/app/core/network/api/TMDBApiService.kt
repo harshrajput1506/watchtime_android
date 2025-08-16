@@ -1,11 +1,17 @@
 package com.app.core.network.api
 
+import com.app.core.network.model.CreditsResponse
 import com.app.core.network.model.MediaListResponse
+import com.app.core.network.model.MovieDetailsResponse
 import com.app.core.network.model.MoviesListResponse
+import com.app.core.network.model.SeasonDetailsResponse
+import com.app.core.network.model.TvShowDetailsResponse
 import com.app.core.network.model.TvShowsListResponse
+import com.app.core.network.model.WatchProvidersResponse
 import com.app.core.network.util.Constants
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface TMDBApiService {
@@ -109,5 +115,54 @@ interface TMDBApiService {
         @Query("include_adult") includeAdult: Boolean = false,
         @Query("first_air_date_year") year: Int? = null
     ): TvShowsListResponse
+
+    // Media Details endpoints
+    @GET("movie/{movie_id}")
+    suspend fun getMovieDetails(
+        @Path("movie_id") movieId: Int,
+        @Header("Authorization") authorization: String = "Bearer ${Constants.TMDB_API_KEY}",
+        @Query("language") language: String = "en-US"
+    ): MovieDetailsResponse
+
+    @GET("tv/{tv_id}")
+    suspend fun getTvShowDetails(
+        @Path("tv_id") tvId: Int,
+        @Header("Authorization") authorization: String = "Bearer ${Constants.TMDB_API_KEY}",
+        @Query("language") language: String = "en-US"
+    ): TvShowDetailsResponse
+
+    @GET("movie/{movie_id}/credits")
+    suspend fun getMovieCredits(
+        @Path("movie_id") movieId: Int,
+        @Header("Authorization") authorization: String = "Bearer ${Constants.TMDB_API_KEY}",
+        @Query("language") language: String = "en-US"
+    ): CreditsResponse
+
+    @GET("tv/{tv_id}/credits")
+    suspend fun getTvShowCredits(
+        @Path("tv_id") tvId: Int,
+        @Header("Authorization") authorization: String = "Bearer ${Constants.TMDB_API_KEY}",
+        @Query("language") language: String = "en-US"
+    ): CreditsResponse
+
+    @GET("movie/{movie_id}/watch/providers")
+    suspend fun getMovieWatchProviders(
+        @Path("movie_id") movieId: Int,
+        @Header("Authorization") authorization: String = "Bearer ${Constants.TMDB_API_KEY}"
+    ): WatchProvidersResponse
+
+    @GET("tv/{tv_id}/watch/providers")
+    suspend fun getTvShowWatchProviders(
+        @Path("tv_id") tvId: Int,
+        @Header("Authorization") authorization: String = "Bearer ${Constants.TMDB_API_KEY}"
+    ): WatchProvidersResponse
+
+    @GET("tv/{tv_id}/season/{season_number}")
+    suspend fun getTvSeasonDetails(
+        @Path("tv_id") tvId: Int,
+        @Path("season_number") seasonNumber: Int,
+        @Header("Authorization") authorization: String = "Bearer ${Constants.TMDB_API_KEY}",
+        @Query("language") language: String = "en-US"
+    ): SeasonDetailsResponse
 
 }

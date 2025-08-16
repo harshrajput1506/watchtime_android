@@ -1,10 +1,10 @@
 package com.app.popular.data.data_source
 
 import android.util.Log
-import com.app.core.domain.entities.Media
 import com.app.core.network.api.TMDBApiService
 import com.app.core.network.util.NetworkResult
 import com.app.popular.data.mapper.toDomain
+import com.app.popular.domain.entities.Media
 
 class RemoteDataSource(
     private val tmdbApiService: TMDBApiService

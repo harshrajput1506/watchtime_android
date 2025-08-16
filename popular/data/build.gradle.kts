@@ -37,7 +37,6 @@ dependencies {
     // Core modules
     implementation(project(":core:network"))
     implementation(project(":core:utils"))
-    implementation(project(":core:domain"))
 
     // domain module
     implementation(project(":popular:domain"))

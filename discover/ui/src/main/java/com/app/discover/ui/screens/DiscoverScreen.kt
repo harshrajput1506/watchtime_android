@@ -49,8 +49,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.app.core.domain.entities.Media
 import com.app.core.ui.composables.MediaChoiceRow
+import com.app.discover.domain.entities.Media
 import com.app.discover.ui.R
 import com.app.discover.ui.composables.DiscoverMediaShimmer
 import com.app.discover.ui.composables.DiscoverSearchBar
@@ -68,7 +68,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun DiscoverScreen(
     modifier: Modifier = Modifier,
     viewModel: DiscoverViewModel = koinViewModel(),
-    onNavigateBack: () -> Unit = {}
+    onNavigateToMediaDetails: (Int, String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val gridState = rememberLazyGridState()
@@ -294,7 +294,7 @@ fun DiscoverScreen(
                             } else {
                                 MediaGrid(
                                     items = searchState.mediaList,
-                                    onItemClick = viewModel::onMediaClicked,
+                                    onItemClick = onNavigateToMediaDetails,
                                     gridState = gridState,
                                     isLoadingMore = searchState.isLoadingMore
                                 )
@@ -328,7 +328,7 @@ fun DiscoverScreen(
 
                             MediaGrid(
                                 items = mediaList,
-                                onItemClick = viewModel::onMediaClicked,
+                                onItemClick = onNavigateToMediaDetails,
                                 gridState = gridState,
                                 isLoadingMore = isLoadingMore
                             )
@@ -374,7 +374,7 @@ fun InfoMessage(message: String, isError: Boolean = false) {
 @Composable
 fun MediaGrid(
     items: List<Media>,
-    onItemClick: (Int) -> Unit,
+    onItemClick: (Int, String) -> Unit,
     gridState: LazyGridState = rememberLazyGridState(),
     isLoadingMore: Boolean = false
 ) {
@@ -396,7 +396,8 @@ fun MediaGrid(
         if (isLoadingMore) {
             items(2) {
                 MediaCard(
-                    isShimmer = true
+                    isShimmer = true,
+                    onClick = { _, _ -> } // No action needed for shimmer items
                 )
             }
         }

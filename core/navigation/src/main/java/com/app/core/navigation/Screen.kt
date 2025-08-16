@@ -10,4 +10,7 @@ sealed class Screen {
 
     @Serializable
     object Auth : Screen()
+
+    @Serializable
+    data class MediaDetails(val id: Int, val type: String) : Screen()
 }

@@ -1,7 +1,7 @@
 package com.app.discover.domain.repository
 
-import com.app.core.domain.entities.Media
 import com.app.discover.domain.entities.DiscoverFilters
+import com.app.discover.domain.entities.Media
 
 interface DiscoverRepository {
     suspend fun discoverMovies(

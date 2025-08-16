@@ -4,10 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.app.auth.ui.screens.AuthScreen
 import com.app.auth.ui.states.AuthState
 import com.app.auth.ui.viewmodels.AuthViewModel
 import com.app.core.home.HomeScreen
+import com.app.media.ui.MediaDetailsScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -25,7 +27,11 @@ fun AppNavigation(
     NavHost(navController = navController, startDestination = startDestination) {
 
         composable<Screen.Home> {
-            HomeScreen()
+            HomeScreen(
+                navigateToMediaDetails = { mediaId, mediaType ->
+                    navController.navigate(Screen.MediaDetails(mediaId, mediaType))
+                }
+            )
         }
 
         composable<Screen.Auth> {
@@ -36,6 +42,11 @@ fun AppNavigation(
                     }
                 }
             }
+        }
+
+        composable<Screen.MediaDetails> { backStackEntry ->
+            val screen = backStackEntry.toRoute<Screen.MediaDetails>()
+            MediaDetailsScreen(screen.id, screen.type)
         }
     }
 }

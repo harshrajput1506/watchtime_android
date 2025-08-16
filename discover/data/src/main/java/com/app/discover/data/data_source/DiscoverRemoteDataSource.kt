@@ -1,11 +1,11 @@
 package com.app.discover.data.data_source
 
 import android.util.Log
-import com.app.core.domain.entities.Media
 import com.app.core.network.api.TMDBApiService
 import com.app.core.network.util.NetworkResult
 import com.app.discover.data.mapper.toDomain
 import com.app.discover.domain.entities.DiscoverFilters
+import com.app.discover.domain.entities.Media
 
 class DiscoverRemoteDataSource(
     private val tmdbApiService: TMDBApiService

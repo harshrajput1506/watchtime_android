@@ -1,6 +1,6 @@
 package com.app.popular.domain.repository
 
-import com.app.core.domain.entities.Media
+import com.app.popular.domain.entities.Media
 
 interface PopularRepository {
     suspend fun getPopularMovies(page: Int = 1): List<Media>

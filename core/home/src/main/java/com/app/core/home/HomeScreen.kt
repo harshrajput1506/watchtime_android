@@ -9,7 +9,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    navigateToMediaDetails: (Int, String) -> Unit
+) {
     val navController = rememberNavController()
     val currentRoute =
         navController.currentBackStackEntryAsState().value?.destination?.route
@@ -33,7 +35,8 @@ fun HomeScreen() {
 
         HomeNavigation(
             modifier = Modifier.padding(innerPadding),
-            navController = navController
+            navController = navController,
+            navigateToMediaDetails = navigateToMediaDetails
         )
     }
 }

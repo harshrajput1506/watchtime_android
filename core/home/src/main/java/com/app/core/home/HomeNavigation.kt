@@ -17,26 +17,28 @@ import kotlinx.serialization.Serializable
 fun HomeNavigation(
     navController: NavHostController,
     modifier: Modifier = Modifier,
+    navigateToMediaDetails: (Int, String) -> Unit
 ) {
     NavHost(navController = navController, startDestination = HomeDestination.Popular) {
         composable<HomeDestination.Popular> {
             PopularScreen(
-                modifier = modifier
-            ) {
-                navController.navigate(HomeDestination.Discover) {
-                    popUpTo(HomeDestination.Popular) {
-                        inclusive = false
+                modifier = modifier,
+                onNavigateToMediaDetails = navigateToMediaDetails,
+                onNavigateToDiscover = {
+                    navController.navigate(HomeDestination.Discover) {
+                        popUpTo(HomeDestination.Popular) {
+                            inclusive = false
+                        }
                     }
                 }
-            }
+            )
         }
         composable<HomeDestination.Discover> {
 
             DiscoverScreen(
-                modifier = modifier
-            ) {
-
-            }
+                modifier = modifier,
+                onNavigateToMediaDetails = navigateToMediaDetails,
+            )
         }
         composable<HomeDestination.Collections> {
             DemoScreen(modifier, "Collections Screen")

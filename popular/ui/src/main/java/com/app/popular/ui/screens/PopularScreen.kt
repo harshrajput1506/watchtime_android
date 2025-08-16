@@ -39,9 +39,9 @@ import org.koin.compose.viewmodel.koinViewModel
 fun PopularScreen(
     modifier: Modifier = Modifier,
     viewModel: PopularViewModel = koinViewModel(),
-    onNavigateToDiscover: () -> Unit = {},
-
-    ) {
+    onNavigateToDiscover: () -> Unit,
+    onNavigateToMediaDetails: (Int, String) -> Unit
+) {
     val scrollState = rememberScrollState()
     val state = viewModel.popularState.collectAsState()
     val trendingDailyState = state.value.trendingDailyState
@@ -90,10 +90,7 @@ fun PopularScreen(
                     is TrendingWeeklyState.Loading -> true
                     else -> false
                 },
-                onMediaClicked = { mediaId ->
-
-                }
-
+                onMediaClicked = onNavigateToMediaDetails
             )
 
             // Popular Section
@@ -116,8 +113,7 @@ fun PopularScreen(
                     is PopularTvShowState.Loading -> true
                     else -> false
                 },
-                onMediaClicked = { mediaId ->
-                }
+                onMediaClicked = onNavigateToMediaDetails
             )
 
 
@@ -141,8 +137,7 @@ fun PopularScreen(
                     is TopRatedTvShowState.Loading -> true
                     else -> false
                 },
-                onMediaClicked = { mediaId ->
-                }
+                onMediaClicked = onNavigateToMediaDetails
             )
 
         }

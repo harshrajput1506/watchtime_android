@@ -1,4 +1,4 @@
-package com.app.core.domain.entities
+package com.app.popular.domain.entities
 
 data class Media(
     val id: Int,

@@ -19,7 +19,8 @@ fun DiscoverMediaShimmer() {
     ) {
         items(10) { index ->
             MediaCard(
-                isShimmer = true
+                isShimmer = true,
+                onClick = { _, _ -> }
             )
         }
     }

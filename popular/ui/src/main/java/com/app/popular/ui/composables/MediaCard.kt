@@ -19,8 +19,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.app.core.domain.entities.Media
 import com.app.core.ui.composables.shimmer
+import com.app.popular.domain.entities.Media
 
 @Composable
 fun MediaCard(
@@ -28,7 +28,7 @@ fun MediaCard(
     media: Media? = null,
     height: Dp = 180.dp,
     width: Dp = 120.dp,
-    onClick: (Int) -> Unit = {},
+    onClick: (Int, String) -> Unit,
     isShimmer: Boolean = false
 ) {
     Column(
@@ -38,7 +38,9 @@ fun MediaCard(
             .clickable(
                 enabled = media != null
             ) {
-                onClick(media?.id ?: -1)
+                media?.let {
+                    onClick(it.id, it.type.name)
+                }
             }
     ) {
         Card(

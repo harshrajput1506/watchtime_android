@@ -19,8 +19,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.app.core.domain.entities.Media
 import com.app.core.ui.composables.MediaChoiceRow
+import com.app.popular.domain.entities.Media
 
 
 @Composable
@@ -30,7 +30,7 @@ fun MediaSection(
     options: List<String> = listOf("Movies", "TV"),
     mediaList1: List<Media> = emptyList(),
     mediaList2: List<Media> = emptyList(),
-    onMediaClicked: (Int) -> Unit,
+    onMediaClicked: (Int, String) -> Unit,
     isOption1Loading: Boolean = true,
     isOption2Loading: Boolean = true
 ) {
@@ -78,9 +78,7 @@ fun MediaSection(
                     items(currentMediaList.size) { index ->
                         MediaCard(
                             media = currentMediaList[index],
-                            onClick = { mediaId ->
-                                onMediaClicked(mediaId)
-                            }
+                            onClick = onMediaClicked
                         )
                     }
                 }

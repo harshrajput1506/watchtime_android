@@ -37,13 +37,10 @@ dependencies {
 
     // Domain modules
     implementation(project(":discover:domain"))
-    implementation(project(":popular:domain"))
-    implementation(project(":auth:domain"))
 
     // Core modules
     implementation(project(":core:utils"))
     implementation(project(":core:ui"))
-    implementation(project(":core:domain"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

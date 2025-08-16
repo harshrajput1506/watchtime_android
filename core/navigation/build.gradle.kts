@@ -39,6 +39,7 @@ dependencies {
 
     implementation(project(":core:home"))
     implementation(project(":auth:ui"))
+    implementation(project(":media:ui"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

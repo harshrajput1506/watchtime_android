@@ -1,9 +1,9 @@
 package com.app.discover.data.repository
 
-import com.app.core.domain.entities.Media
 import com.app.core.network.util.NetworkResult
 import com.app.discover.data.data_source.DiscoverRemoteDataSource
 import com.app.discover.domain.entities.DiscoverFilters
+import com.app.discover.domain.entities.Media
 import com.app.discover.domain.repository.DiscoverRepository
 
 class DiscoverRepositoryImpl(

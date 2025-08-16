@@ -1,6 +1,6 @@
 package com.app.discover.ui.states
 
-import com.app.core.domain.entities.Media
+import com.app.discover.domain.entities.Media
 
 sealed class DiscoverMoviesState {
     object Loading : DiscoverMoviesState()

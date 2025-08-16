@@ -1,11 +1,11 @@
 package com.app.discover.data.mapper
 
-import com.app.core.domain.entities.Media
-import com.app.core.domain.entities.MediaType
 import com.app.core.network.model.MediaResponse
 import com.app.core.network.model.MovieResponse
 import com.app.core.network.model.TvShowResponse
 import com.app.core.network.util.ImageUrlBuilder
+import com.app.discover.domain.entities.Media
+import com.app.discover.domain.entities.MediaType
 
 fun MovieResponse.toDomain(): Media {
     return Media(

@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.app.core.network.util.ImageUrlBuilder
+import com.app.core.ui.composables.shimmer
 import com.app.media.domain.model.CastMember
 import com.app.media.domain.model.Genre
 import com.app.media.domain.model.Provider
@@ -54,21 +55,23 @@ fun UserScoreBar(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End
     ) {
         Box(
-            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant, CircleShape),
+            modifier = Modifier.background(
+                MaterialTheme.colorScheme.surfaceContainerHighest,
+                CircleShape
+            ),
             contentAlignment = Alignment.Center
         ) {
             Row {
                 Text(
                     ratingPercentage.toString(),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.labelLarge,
                 )
                 Text(
                     "%",
-                    fontSize = 8.sp,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.labelSmall
                 )
             }
             CircularProgressIndicator(
@@ -81,21 +84,6 @@ fun UserScoreBar(
                 color = progressColor
             )
         }
-
-        Spacer(Modifier.width(4.dp))
-
-        Column {
-            Text(
-                "User",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            Text(
-                "Score",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-            )
-        }
     }
 }
 
@@ -106,14 +94,14 @@ fun GenreChip(
 ) {
     Box(
         modifier = modifier.background(
-            MaterialTheme.colorScheme.surfaceVariant,
+            MaterialTheme.colorScheme.surfaceContainerHigh,
             RoundedCornerShape(100.dp)
         )
     ) {
         Text(
             genre.name,
-            fontSize = 12.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(vertical = 8.dp, horizontal = 24.dp)
         )
     }
@@ -127,17 +115,16 @@ fun CastSection(
     Column(modifier = modifier) {
         Text(
             "Cast",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Medium,
+            style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(horizontal = 4.dp)
         ) {
-            items(cast.take(10)) { member ->
+            items(cast.take(16)) { member ->
                 CastMemberCard(member)
             }
         }
@@ -149,45 +136,42 @@ fun CastMemberCard(
     member: CastMember,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.width(120.dp),
-        shape = RoundedCornerShape(8.dp)
+    Column(
+        modifier = Modifier
+            .width(100.dp)
+            .aspectRatio(0.7f)
     ) {
-        Column(
-            modifier = Modifier.padding(8.dp)
-        ) {
-            AsyncImage(
-                model = ImageUrlBuilder.buildImageUrl(
-                    member.profilePath,
-                    ImageUrlBuilder.ImageSize.W185
-                ),
-                contentDescription = member.name,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(0.75f)
-                    .clip(RoundedCornerShape(6.dp)),
-                contentScale = ContentScale.Crop
-            )
+        AsyncImage(
+            model = ImageUrlBuilder.buildImageUrl(
+                member.profilePath,
+                ImageUrlBuilder.ImageSize.W185
+            ),
+            contentDescription = member.name,
+            modifier = Modifier
+                .size(100.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop
+        )
+        Spacer(modifier = Modifier.height(8.dp))
 
-            Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            modifier = Modifier.padding(horizontal = 4.dp),
+            text = member.name,
+            style = MaterialTheme.typography.labelMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
 
-            Text(
-                text = member.name,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Text(
-                text = member.character,
-                fontSize = 10.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+        Text(
+            modifier = Modifier.padding(horizontal = 4.dp),
+            text = member.character,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
     }
+
 }
 
 @Composable
@@ -231,6 +215,52 @@ fun ProviderCard(
             contentDescription = provider.providerName,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Fit
+        )
+    }
+}
+
+
+@Composable
+fun ShimmerPlaceHolder() {
+    Column(
+        modifier = Modifier
+            .padding(24.dp)
+            .fillMaxSize()
+    ) {
+        ShimmerCard(
+            modifier = Modifier
+                .height(40.dp)
+                .fillMaxWidth(0.6f)
+        )
+        Spacer(Modifier.height(8.dp))
+        ShimmerCard(
+            modifier = Modifier
+                .height(20.dp)
+                .fillMaxWidth(0.4f)
+        )
+        Spacer(Modifier.height(24.dp))
+        ShimmerCard(
+            modifier = Modifier
+                .height(120.dp)
+                .fillMaxWidth()
+        )
+
+    }
+
+}
+
+@Composable
+fun ShimmerCard(
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.medium,
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .shimmer()
         )
     }
 }

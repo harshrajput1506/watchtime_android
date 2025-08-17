@@ -41,6 +41,8 @@ dependencies {
     // Project dependencies
     implementation(project(":core:network"))
     implementation(project(":media:domain"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:utils"))
 
     // UI dependencies
     implementation(libs.androidx.lifecycle.runtime.ktx)

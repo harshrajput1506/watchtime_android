@@ -1,5 +1,8 @@
 package com.app.popular.ui.screens
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,12 +38,15 @@ import com.app.popular.ui.states.TrendingWeeklyState
 import com.app.popular.ui.viewModels.PopularViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun PopularScreen(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: PopularViewModel = koinViewModel(),
     onNavigateToDiscover: () -> Unit,
-    onNavigateToMediaDetails: (Int, String) -> Unit
+    onNavigateToMediaDetails: (Int, String, String?) -> Unit
 ) {
     val scrollState = rememberScrollState()
     val state = viewModel.popularState.collectAsState()
@@ -90,7 +96,9 @@ fun PopularScreen(
                     is TrendingWeeklyState.Loading -> true
                     else -> false
                 },
-                onMediaClicked = onNavigateToMediaDetails
+                onMediaClicked = onNavigateToMediaDetails,
+                animatedVisibilityScope = animatedVisibilityScope,
+                sharedTransitionScope = sharedTransitionScope
             )
 
             // Popular Section
@@ -113,7 +121,9 @@ fun PopularScreen(
                     is PopularTvShowState.Loading -> true
                     else -> false
                 },
-                onMediaClicked = onNavigateToMediaDetails
+                onMediaClicked = onNavigateToMediaDetails,
+                animatedVisibilityScope = animatedVisibilityScope,
+                sharedTransitionScope = sharedTransitionScope
             )
 
 
@@ -137,7 +147,9 @@ fun PopularScreen(
                     is TopRatedTvShowState.Loading -> true
                     else -> false
                 },
-                onMediaClicked = onNavigateToMediaDetails
+                onMediaClicked = onNavigateToMediaDetails,
+                animatedVisibilityScope = animatedVisibilityScope,
+                sharedTransitionScope = sharedTransitionScope
             )
 
         }

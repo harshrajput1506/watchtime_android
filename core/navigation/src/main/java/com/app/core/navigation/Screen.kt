@@ -12,5 +12,5 @@ sealed class Screen {
     object Auth : Screen()
 
     @Serializable
-    data class MediaDetails(val id: Int, val type: String) : Screen()
+    data class MediaDetails(val id: Int, val type: String, val posterUrl: String?) : Screen()
 }

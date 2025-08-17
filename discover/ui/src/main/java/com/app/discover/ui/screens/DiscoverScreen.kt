@@ -1,6 +1,9 @@
 package com.app.discover.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -55,6 +58,7 @@ import com.app.discover.ui.R
 import com.app.discover.ui.composables.DiscoverMediaShimmer
 import com.app.discover.ui.composables.DiscoverSearchBar
 import com.app.discover.ui.composables.MediaCard
+import com.app.discover.ui.composables.ShimmerMediaCard
 import com.app.discover.ui.states.DiscoverMoviesState
 import com.app.discover.ui.states.DiscoverTvShowsState
 import com.app.discover.ui.states.SearchState
@@ -64,11 +68,14 @@ import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun DiscoverScreen(
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: DiscoverViewModel = koinViewModel(),
-    onNavigateToMediaDetails: (Int, String) -> Unit
+    onNavigateToMediaDetails: (Int, String, String?) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val gridState = rememberLazyGridState()
@@ -296,7 +303,9 @@ fun DiscoverScreen(
                                     items = searchState.mediaList,
                                     onItemClick = onNavigateToMediaDetails,
                                     gridState = gridState,
-                                    isLoadingMore = searchState.isLoadingMore
+                                    isLoadingMore = searchState.isLoadingMore,
+                                    sharedTransitionScope = sharedTransitionScope,
+                                    animatedVisibilityScope = animatedVisibilityScope
                                 )
                             }
                         }
@@ -330,7 +339,9 @@ fun DiscoverScreen(
                                 items = mediaList,
                                 onItemClick = onNavigateToMediaDetails,
                                 gridState = gridState,
-                                isLoadingMore = isLoadingMore
+                                isLoadingMore = isLoadingMore,
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedVisibilityScope = animatedVisibilityScope
                             )
                         }
 
@@ -371,11 +382,14 @@ fun InfoMessage(message: String, isError: Boolean = false) {
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MediaGrid(
     items: List<Media>,
-    onItemClick: (Int, String) -> Unit,
+    onItemClick: (Int, String, String?) -> Unit,
     gridState: LazyGridState = rememberLazyGridState(),
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     isLoadingMore: Boolean = false
 ) {
     LazyVerticalGrid(
@@ -389,16 +403,16 @@ fun MediaGrid(
             MediaCard(
                 media = items[index],
                 onClick = onItemClick,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope
+
             )
         }
 
         // Show loading indicator when loading more content
         if (isLoadingMore) {
             items(2) {
-                MediaCard(
-                    isShimmer = true,
-                    onClick = { _, _ -> } // No action needed for shimmer items
-                )
+                ShimmerMediaCard()
             }
         }
     }

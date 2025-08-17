@@ -1,5 +1,8 @@
 package com.app.core.home
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -8,9 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HomeScreen(
-    navigateToMediaDetails: (Int, String) -> Unit
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    navigateToMediaDetails: (Int, String, String?) -> Unit
 ) {
     val navController = rememberNavController()
     val currentRoute =
@@ -36,6 +42,8 @@ fun HomeScreen(
         HomeNavigation(
             modifier = Modifier.padding(innerPadding),
             navController = navController,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope,
             navigateToMediaDetails = navigateToMediaDetails
         )
     }

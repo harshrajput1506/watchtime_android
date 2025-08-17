@@ -18,10 +18,7 @@ fun DiscoverMediaShimmer() {
             .padding(16.dp)
     ) {
         items(10) { index ->
-            MediaCard(
-                isShimmer = true,
-                onClick = { _, _ -> }
-            )
+            ShimmerMediaCard()
         }
     }
 }

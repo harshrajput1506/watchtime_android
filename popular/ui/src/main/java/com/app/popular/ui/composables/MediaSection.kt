@@ -1,5 +1,8 @@
 package com.app.popular.ui.composables
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +26,7 @@ import com.app.core.ui.composables.MediaChoiceRow
 import com.app.popular.domain.entities.Media
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MediaSection(
     modifier: Modifier = Modifier,
@@ -30,9 +34,12 @@ fun MediaSection(
     options: List<String> = listOf("Movies", "TV"),
     mediaList1: List<Media> = emptyList(),
     mediaList2: List<Media> = emptyList(),
-    onMediaClicked: (Int, String) -> Unit,
+    onMediaClicked: (Int, String, String?) -> Unit,
     isOption1Loading: Boolean = true,
-    isOption2Loading: Boolean = true
+    isOption2Loading: Boolean = true,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
+
 ) {
     var selectedIndex by remember { mutableIntStateOf(0) }
 
@@ -78,7 +85,9 @@ fun MediaSection(
                     items(currentMediaList.size) { index ->
                         MediaCard(
                             media = currentMediaList[index],
-                            onClick = onMediaClicked
+                            onClick = onMediaClicked,
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedVisibilityScope = animatedVisibilityScope
                         )
                     }
                 }

@@ -1,5 +1,8 @@
 package com.app.core.home
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
@@ -13,16 +16,21 @@ import com.app.discover.ui.screens.DiscoverScreen
 import com.app.popular.ui.screens.PopularScreen
 import kotlinx.serialization.Serializable
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HomeNavigation(
     navController: NavHostController,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     modifier: Modifier = Modifier,
-    navigateToMediaDetails: (Int, String) -> Unit
+    navigateToMediaDetails: (Int, String, String?) -> Unit
 ) {
     NavHost(navController = navController, startDestination = HomeDestination.Popular) {
         composable<HomeDestination.Popular> {
             PopularScreen(
                 modifier = modifier,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope,
                 onNavigateToMediaDetails = navigateToMediaDetails,
                 onNavigateToDiscover = {
                     navController.navigate(HomeDestination.Discover) {
@@ -37,6 +45,8 @@ fun HomeNavigation(
 
             DiscoverScreen(
                 modifier = modifier,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope,
                 onNavigateToMediaDetails = navigateToMediaDetails,
             )
         }

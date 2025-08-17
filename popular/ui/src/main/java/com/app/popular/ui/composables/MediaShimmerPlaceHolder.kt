@@ -14,7 +14,7 @@ fun MediaShimmerPlaceHolder() {
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(6) {
-            MediaCard(isShimmer = true, onClick = { _, _ -> })
+            ShimmerMediaCard()
         }
     }
 }

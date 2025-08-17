@@ -1,6 +1,12 @@
+@file:OptIn(ExperimentalSharedTransitionApi::class)
+
 package com.app.media.ui
 
 import android.annotation.SuppressLint
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,16 +40,24 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
+import coil3.compose.SubcomposeAsyncImage
+import coil3.compose.SubcomposeAsyncImageContent
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.app.core.network.util.ImageUrlBuilder
 import com.app.core.ui.composables.shimmer
 import com.app.core.utils.DateTimeUtils
@@ -64,6 +78,9 @@ import org.koin.compose.viewmodel.koinViewModel
 fun MediaDetailsScreen(
     mediaId: Int,
     mediaType: String,
+    posterUrl: String?,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: MediaDetailsViewModel = koinViewModel(),
     onNavigateBack: () -> Unit = {}
 ) {
@@ -89,6 +106,10 @@ fun MediaDetailsScreen(
             PosterSection(
                 isLoading = state is MediaDetailsState.Loading,
                 details = (state as? MediaDetailsState.Success)?.mediaDetails,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope,
+                mediaId = mediaId,
+                posterUrl = posterUrl,
                 onNavigateBack = onNavigateBack
             )
 
@@ -130,94 +151,157 @@ fun MediaDetailsScreen(
 @Composable
 fun PosterSection(
     details: MediaDetails? = null,
+    mediaId: Int,
     isLoading: Boolean,
+    posterUrl: String?,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     onNavigateBack: () -> Unit
 ) {
 
     val screenHeight =
         LocalConfiguration.current.screenHeightDp.dp
-    Card(
-        shape = MaterialTheme.shapes.extraLarge.copy(
-            topStart = CornerSize(0.dp),
-            topEnd = CornerSize(0.dp)
-        )
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(screenHeight * 0.5f),
-            contentAlignment = Alignment.Center
-        ) {
-            // Backdrop Image
-            if (!isLoading && details != null) {
-                AsyncImage(
-                    model = ImageUrlBuilder.buildImageUrl(
-                        details.backdropPath,
-                        ImageUrlBuilder.ImageSize.W780
-                    ),
-                    contentDescription = details.title,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop,
-                    alpha = 0.2f
-                )
-            }
+    with(sharedTransitionScope) {
 
-            // Poster and Back Button
+        Card(
+            shape = MaterialTheme.shapes.extraLarge.copy(
+                topStart = CornerSize(0.dp),
+                topEnd = CornerSize(0.dp)
+            )
+        ) {
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(screenHeight * 0.5f),
                 contentAlignment = Alignment.Center
             ) {
-                Card(
-                    modifier = Modifier
-                        .align(Alignment.Center),
-                    shape = MaterialTheme.shapes.medium,
-                    elevation = CardDefaults.elevatedCardElevation(
-                        defaultElevation = 4.dp
+                // Backdrop Image
+                if (!isLoading && details != null) {
+                    AsyncImage(
+                        model = ImageUrlBuilder.buildImageUrl(
+                            details.backdropPath,
+                            ImageUrlBuilder.ImageSize.W780
+                        ),
+                        contentDescription = details.title,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                        alpha = 0.2f
                     )
+                }
+
+                // Poster and Back Button
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    if (!isLoading && details != null) {
-                        AsyncImage(
-                            model = ImageUrlBuilder.buildImageUrl(
-                                details.posterPath,
-                                ImageUrlBuilder.ImageSize.W500
-                            ),
-                            contentDescription = details.title,
-                            modifier = Modifier.fillMaxHeight(0.8f),
-                            contentScale = ContentScale.Fit
+                    Card(
+                        modifier = Modifier
+                            .align(Alignment.Center),
+
+                        shape = MaterialTheme.shapes.medium,
+                        elevation = CardDefaults.elevatedCardElevation(
+                            defaultElevation = 4.dp
                         )
-                    } else {
-                        // Placeholder for loading state
-                        Box(
+                    ) {
+                        SubcomposeAsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(
+                                    posterUrl
+                                )
+                                .crossfade(true)
+                                .placeholderMemoryCacheKey("poster_${mediaId}")
+                                .memoryCacheKey("poster_${mediaId}")
+                                .diskCacheKey("poster_$mediaId")
+                                .build(),
                             modifier = Modifier
                                 .fillMaxHeight(0.8f)
-                                .shimmer(),
+                                .aspectRatio(0.65f)
+                                .clip(
+                                    MaterialTheme.shapes.medium
+                                )
+                                .sharedElement(
+                                    rememberSharedContentState("poster_$mediaId"),
+                                    animatedVisibilityScope = animatedVisibilityScope
+
+                                ),
+                            contentDescription = details?.title,
+                            contentScale = ContentScale.Crop
+                        ) {
+                            val state = painter.state.collectAsState().value
+                            Log.d("MediaDetailsScreen", "PosterSection: $state")
+                            when (state) {
+                                AsyncImagePainter.State.Empty -> ShimmerPoster()
+                                is AsyncImagePainter.State.Error -> ShimmerPoster(isError = true)
+                                is AsyncImagePainter.State.Loading -> ShimmerPoster()
+                                is AsyncImagePainter.State.Success -> SubcomposeAsyncImageContent()
+                            }
+
+
+                        }
+
+                    }
+
+                    FilledIconButton(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(horizontal = 16.dp, vertical = 48.dp),
+                        onClick = onNavigateBack,
+                        shape = CircleShape,
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        )
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }
 
-                FilledIconButton(
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(horizontal = 16.dp, vertical = 48.dp),
-                    onClick = onNavigateBack,
-                    shape = CircleShape,
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer
-                    )
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
             }
 
         }
-
     }
+}
 
+
+@Composable
+fun ShimmerPoster(
+    modifier: Modifier = Modifier,
+    isError: Boolean = false
+) {
+    Card(
+        modifier = modifier
+            .fillMaxHeight(0.8f)
+            .aspectRatio(0.65f),
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(
+            4.dp
+        )
+    ) {
+        if (!isError) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .shimmer()
+            )
+        } else {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_broken_image),
+                    contentDescription = "Broken Image",
+                    modifier = Modifier.size(32.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                )
+            }
+        }
+    }
 }
 
 @Composable

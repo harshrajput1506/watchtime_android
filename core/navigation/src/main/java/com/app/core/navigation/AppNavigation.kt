@@ -1,5 +1,7 @@
 package com.app.core.navigation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,6 +14,7 @@ import com.app.core.home.HomeScreen
 import com.app.media.ui.MediaDetailsScreen
 import org.koin.compose.viewmodel.koinViewModel
 
+@ExperimentalSharedTransitionApi
 @Composable
 fun AppNavigation(
     authViewModel: AuthViewModel = koinViewModel(),
@@ -24,31 +27,41 @@ fun AppNavigation(
     }
     val startDestination = if (userAuthenticated) Screen.Home else Screen.Auth
 
-    NavHost(navController = navController, startDestination = startDestination) {
+    SharedTransitionLayout {
+        NavHost(navController = navController, startDestination = startDestination) {
 
-        composable<Screen.Home> {
-            HomeScreen(
-                navigateToMediaDetails = { mediaId, mediaType ->
-                    navController.navigate(Screen.MediaDetails(mediaId, mediaType))
-                }
-            )
-        }
+            composable<Screen.Home> {
+                HomeScreen(
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    animatedVisibilityScope = this,
+                    navigateToMediaDetails = { mediaId, mediaType, posterUrl ->
+                        navController.navigate(Screen.MediaDetails(mediaId, mediaType, posterUrl))
+                    }
+                )
+            }
 
-        composable<Screen.Auth> {
-            AuthScreen {
-                navController.navigate(Screen.Home) {
-                    popUpTo(Screen.Auth) {
-                        inclusive = true
+            composable<Screen.Auth> {
+                AuthScreen {
+                    navController.navigate(Screen.Home) {
+                        popUpTo(Screen.Auth) {
+                            inclusive = true
+                        }
                     }
                 }
             }
-        }
 
-        composable<Screen.MediaDetails> { backStackEntry ->
-            val screen = backStackEntry.toRoute<Screen.MediaDetails>()
-            MediaDetailsScreen(screen.id, screen.type, onNavigateBack = {
-                navController.popBackStack()
-            })
+            composable<Screen.MediaDetails> { backStackEntry ->
+                val screen = backStackEntry.toRoute<Screen.MediaDetails>()
+                MediaDetailsScreen(
+                    mediaId = screen.id,
+                    mediaType = screen.type,
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    animatedVisibilityScope = this,
+                    posterUrl = screen.posterUrl,
+                    onNavigateBack = {
+                        navController.popBackStack()
+                    })
+            }
         }
     }
 }

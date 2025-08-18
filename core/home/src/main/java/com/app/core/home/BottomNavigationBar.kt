@@ -12,12 +12,12 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun BottomNavigationBar(
-    selected: String,
+    selected: HomeDestination,
     onItemClick: (HomeDestination) -> Unit = {},
 ) {
     NavigationBar {
         NavigationBarItem(
-            selected = selected == HomeDestination.Popular.toString(),
+            selected = selected::class == HomeDestination.Popular::class,
             onClick = {
                 onItemClick(HomeDestination.Popular)
             },
@@ -32,7 +32,7 @@ fun BottomNavigationBar(
         )
 
         NavigationBarItem(
-            selected = selected == HomeDestination.Discover.toString(),
+            selected = selected::class == HomeDestination.Discover::class,
             onClick = { onItemClick(HomeDestination.Discover) },
             label = { Text("Discover") },
             icon = {
@@ -44,7 +44,7 @@ fun BottomNavigationBar(
             }
         )
         NavigationBarItem(
-            selected = selected == HomeDestination.Collections.toString(),
+            selected = selected::class == HomeDestination.Collections::class,
             onClick = { onItemClick(HomeDestination.Collections) },
             label = { Text("Collections") },
             icon = {
@@ -56,7 +56,7 @@ fun BottomNavigationBar(
             }
         )
         NavigationBarItem(
-            selected = selected == HomeDestination.Profile.toString(),
+            selected = selected::class == HomeDestination.Profile::class,
             onClick = { onItemClick(HomeDestination.Profile) },
             label = { Text("Profile") },
             icon = {

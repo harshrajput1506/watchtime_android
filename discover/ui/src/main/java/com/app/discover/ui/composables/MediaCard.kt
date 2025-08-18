@@ -44,13 +44,14 @@ fun MediaCard(
     media: Media,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    onClick: (Int, String, String?) -> Unit,
+    onClick: (Int, String, String?, String) -> Unit,
 ) {
+    val posterKey = "discover_poster_${media.id}"
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                onClick(media.id, media.type.name, media.posterUrl)
+                onClick(media.id, media.type.name, media.posterUrl, posterKey)
             }
     ) {
         Card(
@@ -61,19 +62,19 @@ fun MediaCard(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(media.posterUrl)
                     .crossfade(true)
-                    .placeholderMemoryCacheKey("poster_${media.id}")
-                    .memoryCacheKey("poster_${media.id}")
+                    .placeholderMemoryCacheKey(posterKey)
+                    .memoryCacheKey(posterKey)
                     .build(),
                 contentDescription = media.title,
                 modifier = with(sharedTransitionScope) {
                     modifier
                         .fillMaxWidth()
                         .aspectRatio(0.65f)
-                        .clip(MaterialTheme.shapes.medium)
                         .sharedElement(
-                            rememberSharedContentState("poster_${media.id}"),
+                            rememberSharedContentState(posterKey),
                             animatedVisibilityScope = animatedVisibilityScope
                         )
+                        .clip(MaterialTheme.shapes.medium)
                 },
                 contentScale = ContentScale.Crop
             ) {

@@ -34,7 +34,7 @@ fun MediaSection(
     options: List<String> = listOf("Movies", "TV"),
     mediaList1: List<Media> = emptyList(),
     mediaList2: List<Media> = emptyList(),
-    onMediaClicked: (Int, String, String?) -> Unit,
+    onMediaClicked: (Int, String, String?, String) -> Unit,
     isOption1Loading: Boolean = true,
     isOption2Loading: Boolean = true,
     sharedTransitionScope: SharedTransitionScope,
@@ -84,6 +84,7 @@ fun MediaSection(
                 ) {
                     items(currentMediaList.size) { index ->
                         MediaCard(
+                            label = label,
                             media = currentMediaList[index],
                             onClick = onMediaClicked,
                             sharedTransitionScope = sharedTransitionScope,

@@ -75,7 +75,7 @@ fun DiscoverScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: DiscoverViewModel = koinViewModel(),
-    onNavigateToMediaDetails: (Int, String, String?) -> Unit
+    onNavigateToMediaDetails: (Int, String, String?, String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val gridState = rememberLazyGridState()
@@ -386,7 +386,7 @@ fun InfoMessage(message: String, isError: Boolean = false) {
 @Composable
 fun MediaGrid(
     items: List<Media>,
-    onItemClick: (Int, String, String?) -> Unit,
+    onItemClick: (Int, String, String?, String) -> Unit,
     gridState: LazyGridState = rememberLazyGridState(),
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,

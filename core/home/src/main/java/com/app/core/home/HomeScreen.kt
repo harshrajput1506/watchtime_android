@@ -16,7 +16,7 @@ import androidx.navigation.compose.rememberNavController
 fun HomeScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    navigateToMediaDetails: (Int, String, String?) -> Unit
+    navigateToMediaDetails: (Int, String, String?, String) -> Unit
 ) {
     val navController = rememberNavController()
     val currentRoute =

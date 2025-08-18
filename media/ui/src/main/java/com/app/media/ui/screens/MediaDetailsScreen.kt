@@ -1,13 +1,10 @@
-@file:OptIn(ExperimentalSharedTransitionApi::class)
-
-package com.app.media.ui
+package com.app.media.ui.screens
 
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,9 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
@@ -48,8 +42,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -59,26 +51,27 @@ import coil3.compose.SubcomposeAsyncImageContent
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.app.core.network.util.ImageUrlBuilder
-import com.app.core.ui.composables.shimmer
 import com.app.core.utils.DateTimeUtils
 import com.app.media.domain.model.Cast
 import com.app.media.domain.model.MediaDetails
-import com.app.media.domain.model.Season
-import com.app.media.domain.model.SeasonDetails
 import com.app.media.ui.components.CastSection
 import com.app.media.ui.components.GenreChip
+import com.app.media.ui.components.SeasonsSection
 import com.app.media.ui.components.ShimmerPlaceHolder
+import com.app.media.ui.components.ShimmerPoster
 import com.app.media.ui.components.UserScoreBar
 import com.app.media.ui.state.MediaDetailsState
 import com.app.media.ui.viewmodel.MediaDetailsViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MediaDetailsScreen(
     mediaId: Int,
     mediaType: String,
     posterUrl: String?,
+    posterKey: String,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: MediaDetailsViewModel = koinViewModel(),
@@ -108,7 +101,7 @@ fun MediaDetailsScreen(
                 details = (state as? MediaDetailsState.Success)?.mediaDetails,
                 sharedTransitionScope = sharedTransitionScope,
                 animatedVisibilityScope = animatedVisibilityScope,
-                mediaId = mediaId,
+                posterKey = posterKey,
                 posterUrl = posterUrl,
                 onNavigateBack = onNavigateBack
             )
@@ -125,7 +118,6 @@ fun MediaDetailsScreen(
                         mediaDetails = successState.mediaDetails,
                         cast = successState.cast,
                         mediaType = mediaType,
-                        seasonDetails = successState.seasonDetails,
                         onSeasonClick = { seasonNumber ->
                             //viewModel.loadSeasonDetails(mediaId, seasonNumber, mediaType)
                         }
@@ -147,11 +139,12 @@ fun MediaDetailsScreen(
 
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun PosterSection(
     details: MediaDetails? = null,
-    mediaId: Int,
+    posterKey: String,
     isLoading: Boolean,
     posterUrl: String?,
     sharedTransitionScope: SharedTransitionScope,
@@ -209,20 +202,19 @@ fun PosterSection(
                                     posterUrl
                                 )
                                 .crossfade(true)
-                                .placeholderMemoryCacheKey("poster_${mediaId}")
-                                .memoryCacheKey("poster_${mediaId}")
-                                .diskCacheKey("poster_$mediaId")
+                                .placeholderMemoryCacheKey(posterKey)
+                                .memoryCacheKey(posterKey)
+                                .diskCacheKey(posterKey)
                                 .build(),
                             modifier = Modifier
                                 .fillMaxHeight(0.8f)
                                 .aspectRatio(0.65f)
+                                .sharedElement(
+                                    rememberSharedContentState(posterKey),
+                                    animatedVisibilityScope = animatedVisibilityScope
+                                )
                                 .clip(
                                     MaterialTheme.shapes.medium
-                                )
-                                .sharedElement(
-                                    rememberSharedContentState("poster_$mediaId"),
-                                    animatedVisibilityScope = animatedVisibilityScope
-
                                 ),
                             contentDescription = details?.title,
                             contentScale = ContentScale.Crop
@@ -268,48 +260,10 @@ fun PosterSection(
 
 
 @Composable
-fun ShimmerPoster(
-    modifier: Modifier = Modifier,
-    isError: Boolean = false
-) {
-    Card(
-        modifier = modifier
-            .fillMaxHeight(0.8f)
-            .aspectRatio(0.65f),
-        shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.cardElevation(
-            4.dp
-        )
-    ) {
-        if (!isError) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .shimmer()
-            )
-        } else {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_broken_image),
-                    contentDescription = "Broken Image",
-                    modifier = Modifier.size(32.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                )
-            }
-        }
-    }
-}
-
-@Composable
 private fun MediaDetailsSection(
     modifier: Modifier = Modifier,
     mediaDetails: MediaDetails,
     cast: Cast?,
-    seasonDetails: List<SeasonDetails>,
     mediaType: String,
     onSeasonClick: (Int) -> Unit
 ) {
@@ -396,94 +350,12 @@ private fun MediaDetailsSection(
         if (mediaType.lowercase() == "tv" && mediaDetails.seasons.isNotEmpty()) {
             SeasonsSection(
                 seasons = mediaDetails.seasons,
-                seasonDetails = seasonDetails,
                 onSeasonClick = onSeasonClick
             )
         }
     }
 }
 
-@Composable
-private fun SeasonsSection(
-    seasons: List<Season>,
-    seasonDetails: List<SeasonDetails>,
-    onSeasonClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier) {
-        Text(
-            "Seasons",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(seasons.filter { it.seasonNumber > 0 }) { season ->
-                SeasonCard(
-                    season = season,
-                    onClick = { onSeasonClick(season.seasonNumber) }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun SeasonCard(
-    season: Season,
-
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .width(120.dp)
-            .clickable(onClick = onClick),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-
-        ) {
-        AsyncImage(
-            model = ImageUrlBuilder.buildImageUrl(
-                season.posterPath,
-                ImageUrlBuilder.ImageSize.W185
-            ),
-            contentDescription = season.name,
-            modifier = Modifier
-                .width(120.dp)
-                .aspectRatio(0.65f)
-                .clip(MaterialTheme.shapes.medium),
-            contentScale = ContentScale.Crop
-        )
-        Text(
-            modifier = Modifier.padding(horizontal = 4.dp),
-            text = season.name,
-            style = MaterialTheme.typography.titleMedium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        season.airDate?.let { airDate ->
-            Text(
-                modifier = Modifier.padding(horizontal = 4.dp),
-                text = DateTimeUtils.formatDate(airDate),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-
-        Text(
-            modifier = Modifier.padding(horizontal = 4.dp),
-            text = "${season.episodeCount} Episodes",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-    }
-}
 
 @Composable
 private fun ErrorScreen(

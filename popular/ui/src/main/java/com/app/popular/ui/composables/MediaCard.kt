@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -41,18 +42,20 @@ import com.app.popular.domain.entities.Media
 @Composable
 fun MediaCard(
     modifier: Modifier = Modifier,
+    label: String,
     media: Media,
     width: Dp = 120.dp,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    onClick: (Int, String, String?) -> Unit,
+    onClick: (Int, String, String?, String) -> Unit,
 ) {
+    val posterKey = "${label.lowercase()}_poster_${media.id}"
     Column(
         modifier = modifier
             .width(width)
             .aspectRatio(0.52f)
             .clickable {
-                onClick(media.id, media.type.name, media.posterUrl)
+                onClick(media.id, media.type.name, media.posterUrl, posterKey)
             }
     ) {
         Card(
@@ -63,8 +66,8 @@ fun MediaCard(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(media.posterUrl)
                     .crossfade(true)
-                    .placeholderMemoryCacheKey("poster_${media.id}")
-                    .memoryCacheKey("poster_${media.id}")
+                    .placeholderMemoryCacheKey(posterKey)
+                    .memoryCacheKey(posterKey)
                     .build(),
                 contentDescription = media.title,
                 modifier = with(sharedTransitionScope) {
@@ -72,9 +75,10 @@ fun MediaCard(
                         .fillMaxWidth()
                         .aspectRatio(0.65f)
                         .sharedElement(
-                            rememberSharedContentState("poster_${media.id}"),
+                            rememberSharedContentState(posterKey),
                             animatedVisibilityScope = animatedVisibilityScope
                         )
+                        .clip(MaterialTheme.shapes.medium)
                 },
                 contentScale = ContentScale.Crop
             ) {

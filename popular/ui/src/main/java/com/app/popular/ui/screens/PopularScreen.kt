@@ -46,7 +46,7 @@ fun PopularScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: PopularViewModel = koinViewModel(),
     onNavigateToDiscover: () -> Unit,
-    onNavigateToMediaDetails: (Int, String, String?) -> Unit
+    onNavigateToMediaDetails: (Int, String, String?, String) -> Unit
 ) {
     val scrollState = rememberScrollState()
     val state = viewModel.popularState.collectAsState()

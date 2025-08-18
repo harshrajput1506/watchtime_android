@@ -11,7 +11,7 @@ import com.app.auth.ui.screens.AuthScreen
 import com.app.auth.ui.states.AuthState
 import com.app.auth.ui.viewmodels.AuthViewModel
 import com.app.core.home.HomeScreen
-import com.app.media.ui.MediaDetailsScreen
+import com.app.media.ui.screens.MediaDetailsScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @ExperimentalSharedTransitionApi
@@ -34,8 +34,15 @@ fun AppNavigation(
                 HomeScreen(
                     sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this,
-                    navigateToMediaDetails = { mediaId, mediaType, posterUrl ->
-                        navController.navigate(Screen.MediaDetails(mediaId, mediaType, posterUrl))
+                    navigateToMediaDetails = { mediaId, mediaType, posterUrl, posterKey ->
+                        navController.navigate(
+                            Screen.MediaDetails(
+                                mediaId,
+                                mediaType,
+                                posterUrl,
+                                posterKey
+                            )
+                        )
                     }
                 )
             }
@@ -58,6 +65,7 @@ fun AppNavigation(
                     sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this,
                     posterUrl = screen.posterUrl,
+                    posterKey = screen.posterKey,
                     onNavigateBack = {
                         navController.popBackStack()
                     })

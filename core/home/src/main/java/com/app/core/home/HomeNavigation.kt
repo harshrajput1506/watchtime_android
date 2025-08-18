@@ -23,7 +23,7 @@ fun HomeNavigation(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     modifier: Modifier = Modifier,
-    navigateToMediaDetails: (Int, String, String?) -> Unit
+    navigateToMediaDetails: (Int, String, String?, String) -> Unit
 ) {
     NavHost(navController = navController, startDestination = HomeDestination.Popular) {
         composable<HomeDestination.Popular> {

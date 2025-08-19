@@ -1,6 +1,6 @@
 package com.app.collections.domain.models
 
-open data class Collection(
+data class Collection(
     val id: String,
     val name: String,
     val titles: List<Title>,

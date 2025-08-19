@@ -37,7 +37,7 @@ class PopularViewModel(
         fetchTopRatedTvShows()
     }
 
-    fun fetchTrendingDaily() {
+    private fun fetchTrendingDaily() {
         _popularState.value = _popularState.value.copy(
             trendingDailyState = TrendingDailyState.Loading
         )
@@ -64,7 +64,7 @@ class PopularViewModel(
         }
     }
 
-    fun fetchTrendingWeekly() {
+    private fun fetchTrendingWeekly() {
         _popularState.value = _popularState.value.copy(
             trendingWeeklyState = TrendingWeeklyState.Loading
         )
@@ -90,7 +90,7 @@ class PopularViewModel(
         }
     }
 
-    fun fetchPopularMovies() {
+    private fun fetchPopularMovies() {
         _popularState.value = _popularState.value.copy(
             popularMovieState = PopularMovieState.Loading
         )
@@ -116,7 +116,7 @@ class PopularViewModel(
         }
     }
 
-    fun fetchPopularTvShows() {
+    private fun fetchPopularTvShows() {
         _popularState.value = _popularState.value.copy(
             popularTvShowState = PopularTvShowState.Loading
         )
@@ -142,7 +142,7 @@ class PopularViewModel(
         }
     }
 
-    fun fetchTopRatedMovies() {
+    private fun fetchTopRatedMovies() {
         _popularState.value = _popularState.value.copy(
             topRatedMovieState = TopRatedMovieState.Loading
         )
@@ -168,11 +168,10 @@ class PopularViewModel(
         }
     }
 
-    fun fetchTopRatedTvShows() {
+    private fun fetchTopRatedTvShows() {
         _popularState.value = _popularState.value.copy(
             topRatedTvShowState = TopRatedTvShowState.Loading
         )
-
         viewModelScope.launch {
             try {
                 val list = popularRepository.getTopRatedTvShows()
@@ -193,5 +192,23 @@ class PopularViewModel(
             }
 
         }
+    }
+
+    fun togglePopularMediaType(type: Int) {
+        _popularState.value = _popularState.value.copy(
+            selectedPopularMediaType = type
+        )
+    }
+
+    fun toggleTopRatedMediaType(type: Int) {
+        _popularState.value = _popularState.value.copy(
+            selectedTopRatedMediaType = type
+        )
+    }
+
+    fun toggleTrendingType(type: Int) {
+        _popularState.value = _popularState.value.copy(
+            selectedTrendingType = type
+        )
     }
 }

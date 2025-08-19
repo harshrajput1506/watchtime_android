@@ -1,16 +1,18 @@
 package com.app.discover.ui.screens
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -29,8 +32,6 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,7 +49,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -61,6 +61,7 @@ import com.app.discover.ui.composables.MediaCard
 import com.app.discover.ui.composables.ShimmerMediaCard
 import com.app.discover.ui.states.DiscoverMoviesState
 import com.app.discover.ui.states.DiscoverTvShowsState
+import com.app.discover.ui.states.DiscoverUiState
 import com.app.discover.ui.states.SearchState
 import com.app.discover.ui.viewModels.DiscoverViewModel
 import kotlinx.coroutines.delay
@@ -129,101 +130,55 @@ fun DiscoverScreen(
         }
     }
 
-    // Animation values
-    val topBarHeight by animateDpAsState(
-        targetValue = if (isScrolled && !isSearchExpanded) 60.dp else 160.dp,
-        animationSpec = tween(1000),
-        label = "topBarHeight"
-    )
-
-    val largeTitleAlpha by animateFloatAsState(
-        targetValue = if (isScrolled && !isSearchExpanded) 0f else 1f,
-        animationSpec = tween(1000),
-        label = "titleAlpha"
-    )
-    val smallTitleAlpha by animateFloatAsState(
-        targetValue = if (isScrolled && !isSearchExpanded) 1f else 0f,
-        animationSpec = tween(1000),
-        label = "titleAlpha"
-    )
-
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             // Top Bar
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(topBarHeight),
-                elevation = CardDefaults.cardElevation(defaultElevation = if (isScrolled) 4.dp else 0.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (isScrolled && !isSearchExpanded) {
-                        // Collapsed top bar
-                        Row(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .align(Alignment.Center),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                "Discover",
-                                style = MaterialTheme.typography.titleLarge,
-                                modifier = Modifier.alpha(smallTitleAlpha)
-                            )
-
-                            IconButton(
-                                onClick = { isSearchExpanded = true }
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_search),
-                                    contentDescription = "Search",
-                                    modifier = Modifier.size(24.dp)
+            SharedTransitionLayout {
+                AnimatedContent(
+                    targetState = isScrolled && !isSearchExpanded,
+                    transitionSpec = {
+                        fadeIn(tween(1000)) togetherWith
+                                fadeOut(tween(1000)) using
+                                SizeTransform { _, _ ->
+                                    tween(durationMillis = 1000)
+                                }
+                    },
+                    label = "TopBarAnimation"
+                ) { isCollapsed ->
+                    if (isCollapsed) {
+                        CollapsedTopBar(
+                            onSearchClick = { isSearchExpanded = true },
+                            textModifier = Modifier
+                                .wrapContentWidth()
+                                .sharedBounds(
+                                    rememberSharedContentState(
+                                        key = "discover_top_bar_title",
+                                    ),
+                                    animatedVisibilityScope = this@AnimatedContent,
+                                    enter = fadeIn(),
+                                    exit = fadeOut(),
+                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                                 )
-                            }
-                        }
+                        )
                     } else {
-                        // Expanded top bar
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center
-
-                        ) {
-                            Text(
-                                "Discover",
-                                style = MaterialTheme.typography.headlineLarge,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .alpha(largeTitleAlpha)
-                            )
-
-                            Spacer(Modifier.height(8.dp))
-
-                            AnimatedVisibility(
-                                visible = !isScrolled || isSearchExpanded,
-                                enter = scaleIn() + fadeIn(),
-                                exit = scaleOut() + fadeOut()
-                            ) {
-                                DiscoverSearchBar(
-                                    label = if (viewModel.uiState.value.selectedMediaType == 0) "Search Movies" else "Search TV Shows",
-                                    query = uiState.searchQuery,
-                                    onQueryChange = viewModel::updateSearchQuery,
-                                    onSearch = viewModel::onKeyboardSearch,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 8.dp)
+                        ExpandedTopBar(
+                            uiState = uiState,
+                            isSearchVisible = !isScrolled || isSearchExpanded,
+                            onQueryChange = viewModel::updateSearchQuery,
+                            onSearch = viewModel::onKeyboardSearch,
+                            textModifier = Modifier
+                                .wrapContentWidth()
+                                .sharedBounds(
+                                    rememberSharedContentState(
+                                        key = "discover_top_bar_title",
+                                    ),
+                                    animatedVisibilityScope = this@AnimatedContent,
+                                    enter = fadeIn(),
+                                    exit = fadeOut(),
+                                    resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
                                 )
-                            }
-                        }
+                        )
                     }
                 }
             }
@@ -363,9 +318,78 @@ fun DiscoverScreen(
     }
 }
 
+@Composable
+private fun CollapsedTopBar(
+    modifier: Modifier = Modifier,
+    textModifier: Modifier = Modifier,
+    onSearchClick: () -> Unit,
+
+    ) {
+    // Collapsed top bar
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            "Discover",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = textModifier
+        )
+
+        IconButton(
+            onClick = onSearchClick
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_search),
+                contentDescription = "Search",
+                modifier = Modifier.size(24.dp)
+            )
+        }
+    }
+}
 
 @Composable
-fun InfoMessage(message: String, isError: Boolean = false) {
+private fun ExpandedTopBar(
+    modifier: Modifier = Modifier,
+    textModifier: Modifier = Modifier,
+    uiState: DiscoverUiState,
+    isSearchVisible: Boolean,
+    onQueryChange: (String) -> Unit,
+    onSearch: (String) -> Unit,
+) {
+    // Expanded top bar
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+
+        ) {
+        Text(
+            "Discover",
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = textModifier
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        DiscoverSearchBar(
+            label = if (uiState.selectedMediaType == 0) "Search Movies" else "Search TV Shows",
+            query = uiState.searchQuery,
+            onQueryChange = onQueryChange,
+            onSearch = onSearch,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+        )
+    }
+}
+
+
+@Composable
+private fun InfoMessage(message: String, isError: Boolean = false) {
     Box(
         modifier = Modifier
             .fillMaxWidth()

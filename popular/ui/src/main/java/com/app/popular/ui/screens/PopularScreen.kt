@@ -20,12 +20,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.auth.domain.entities.UserEntity
 import com.app.popular.ui.R
 import com.app.popular.ui.composables.MediaSection
@@ -49,7 +49,7 @@ fun PopularScreen(
     onNavigateToMediaDetails: (Int, String, String?, String) -> Unit
 ) {
     val scrollState = rememberScrollState()
-    val state = viewModel.popularState.collectAsState()
+    val state = viewModel.popularState.collectAsStateWithLifecycle()
     val trendingDailyState = state.value.trendingDailyState
     val trendingWeeklyState = state.value.trendingWeeklyState
     val popularMoviesState = state.value.popularMovieState
@@ -80,22 +80,32 @@ fun PopularScreen(
             MediaSection(
                 label = "Trending",
                 options = listOf("Today", "This Week"),
-                mediaList1 = when (trendingDailyState) {
-                    is TrendingDailyState.Success -> trendingDailyState.mediaList
-                    else -> emptyList()
+                mediaList = if (state.value.selectedTrendingType == 0) {
+                    when (trendingDailyState) {
+                        is TrendingDailyState.Success -> trendingDailyState.mediaList
+                        else -> emptyList()
+                    }
+                } else {
+                    when (trendingWeeklyState) {
+                        is TrendingWeeklyState.Success -> trendingWeeklyState.mediaList
+                        else -> emptyList()
+                    }
                 },
-                mediaList2 = when (trendingWeeklyState) {
-                    is TrendingWeeklyState.Success -> trendingWeeklyState.mediaList
-                    else -> emptyList()
+                isLoading = if (state.value.selectedTrendingType == 0) {
+                    when (trendingDailyState) {
+                        is TrendingDailyState.Loading -> true
+                        else -> false
+                    }
+                } else {
+                    when (trendingWeeklyState) {
+                        is TrendingWeeklyState.Loading -> true
+                        else -> false
+                    }
                 },
-                isOption1Loading = when (trendingDailyState) {
-                    is TrendingDailyState.Loading -> true
-                    else -> false
+                onOptionSelected = { index ->
+                    viewModel.toggleTrendingType(index)
                 },
-                isOption2Loading = when (trendingWeeklyState) {
-                    is TrendingWeeklyState.Loading -> true
-                    else -> false
-                },
+                selectedType = state.value.selectedTrendingType,
                 onMediaClicked = onNavigateToMediaDetails,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope
@@ -105,22 +115,32 @@ fun PopularScreen(
             MediaSection(
                 label = "Popular",
                 options = listOf("Movies", "TV"),
-                mediaList1 = when (popularMoviesState) {
-                    is PopularMovieState.Success -> popularMoviesState.mediaList
-                    else -> emptyList()
+                mediaList = if (state.value.selectedPopularMediaType == 0) {
+                    when (popularMoviesState) {
+                        is PopularMovieState.Success -> popularMoviesState.mediaList
+                        else -> emptyList()
+                    }
+                } else {
+                    when (popularTvState) {
+                        is PopularTvShowState.Success -> popularTvState.mediaList
+                        else -> emptyList()
+                    }
                 },
-                mediaList2 = when (popularTvState) {
-                    is PopularTvShowState.Success -> popularTvState.mediaList
-                    else -> emptyList()
+                isLoading = if (state.value.selectedPopularMediaType == 0) {
+                    when (popularMoviesState) {
+                        is PopularMovieState.Loading -> true
+                        else -> false
+                    }
+                } else {
+                    when (popularTvState) {
+                        is PopularTvShowState.Loading -> true
+                        else -> false
+                    }
                 },
-                isOption1Loading = when (popularMoviesState) {
-                    is PopularMovieState.Loading -> true
-                    else -> false
+                onOptionSelected = { index ->
+                    viewModel.togglePopularMediaType(index)
                 },
-                isOption2Loading = when (popularTvState) {
-                    is PopularTvShowState.Loading -> true
-                    else -> false
-                },
+                selectedType = state.value.selectedPopularMediaType,
                 onMediaClicked = onNavigateToMediaDetails,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope
@@ -131,22 +151,32 @@ fun PopularScreen(
             MediaSection(
                 label = "Top Rated",
                 options = listOf("Movies", "TV"),
-                mediaList1 = when (topRatedMoviesState) {
-                    is TopRatedMovieState.Success -> topRatedMoviesState.mediaList
-                    else -> emptyList()
+                mediaList = if (state.value.selectedTopRatedMediaType == 0) {
+                    when (topRatedMoviesState) {
+                        is TopRatedMovieState.Success -> topRatedMoviesState.mediaList
+                        else -> emptyList()
+                    }
+                } else {
+                    when (topRatedTvState) {
+                        is TopRatedTvShowState.Success -> topRatedTvState.mediaList
+                        else -> emptyList()
+                    }
                 },
-                mediaList2 = when (topRatedTvState) {
-                    is TopRatedTvShowState.Success -> topRatedTvState.mediaList
-                    else -> emptyList()
+                isLoading = if (state.value.selectedTopRatedMediaType == 0) {
+                    when (topRatedMoviesState) {
+                        is TopRatedMovieState.Loading -> true
+                        else -> false
+                    }
+                } else {
+                    when (topRatedTvState) {
+                        is TopRatedTvShowState.Loading -> true
+                        else -> false
+                    }
                 },
-                isOption1Loading = when (topRatedMoviesState) {
-                    is TopRatedMovieState.Loading -> true
-                    else -> false
+                onOptionSelected = { index ->
+                    viewModel.toggleTopRatedMediaType(index)
                 },
-                isOption2Loading = when (topRatedTvState) {
-                    is TopRatedTvShowState.Loading -> true
-                    else -> false
-                },
+                selectedType = state.value.selectedTopRatedMediaType,
                 onMediaClicked = onNavigateToMediaDetails,
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope

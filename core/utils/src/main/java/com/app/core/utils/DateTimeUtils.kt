@@ -10,12 +10,19 @@ object DateTimeUtils {
         val parser = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH)
         val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.ENGLISH)
 
+        if (input.isEmpty()) {
+            return input
+        }
+
         val date = LocalDate.parse(input, parser)
         return date.format(formatter)
     }
 
     fun isDateInFuture(input: String): Boolean {
         val parser = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH)
+        if (input.isEmpty()) {
+            return false
+        }
         val date = LocalDate.parse(input, parser)
         return date.isAfter(LocalDate.now())
     }

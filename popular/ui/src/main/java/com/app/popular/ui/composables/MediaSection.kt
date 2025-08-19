@@ -15,10 +15,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -32,20 +28,15 @@ fun MediaSection(
     modifier: Modifier = Modifier,
     label: String = "Popular",
     options: List<String> = listOf("Movies", "TV"),
-    mediaList1: List<Media> = emptyList(),
-    mediaList2: List<Media> = emptyList(),
+    mediaList: List<Media> = emptyList(),
+    selectedType: Int = 0,
+    onOptionSelected: (Int) -> Unit,
     onMediaClicked: (Int, String, String?, String) -> Unit,
-    isOption1Loading: Boolean = true,
-    isOption2Loading: Boolean = true,
+    isLoading: Boolean = true,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 
 ) {
-    var selectedIndex by remember { mutableIntStateOf(0) }
-
-    // Determine current media list and loading state based on selection
-    val currentMediaList = if (selectedIndex == 0) mediaList1 else mediaList2
-    val isCurrentLoading = if (selectedIndex == 0) isOption1Loading else isOption2Loading
 
     Column(
         modifier = modifier.padding(vertical = 8.dp)
@@ -64,28 +55,26 @@ fun MediaSection(
 
             MediaChoiceRow(
                 options = options,
-                selectedIndex = selectedIndex,
-                onOptionSelected = { index ->
-                    selectedIndex = index
-                }
+                selectedIndex = selectedType,
+                onOptionSelected = onOptionSelected
             )
         }
 
         // Display content based on current state
         when {
-            isCurrentLoading -> {
+            isLoading -> {
                 MediaShimmerPlaceHolder()
             }
 
-            currentMediaList.isNotEmpty() -> {
+            mediaList.isNotEmpty() -> {
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    items(currentMediaList.size) { index ->
+                    items(mediaList.size) { index ->
                         MediaCard(
                             label = label,
-                            media = currentMediaList[index],
+                            media = mediaList[index],
                             onClick = onMediaClicked,
                             sharedTransitionScope = sharedTransitionScope,
                             animatedVisibilityScope = animatedVisibilityScope

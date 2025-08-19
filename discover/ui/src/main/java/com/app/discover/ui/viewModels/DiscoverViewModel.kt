@@ -274,9 +274,4 @@ class DiscoverViewModel(
             }
         }
     }
-
-    fun onMediaClicked(mediaId: Int) {
-        // Handle media click - navigate to details screen
-        // This can be implemented based on your navigation setup
-    }
 }

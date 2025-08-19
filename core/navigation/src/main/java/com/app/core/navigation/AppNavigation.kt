@@ -17,7 +17,7 @@ import com.app.media.ui.viewmodel.MediaDetailsViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@ExperimentalSharedTransitionApi
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun AppNavigation(
     authViewModel: AuthViewModel = koinViewModel(),

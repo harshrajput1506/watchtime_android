@@ -8,7 +8,10 @@ data class PopularState(
     val trendingDailyState: TrendingDailyState = TrendingDailyState.Empty,
     val trendingWeeklyState: TrendingWeeklyState = TrendingWeeklyState.Empty,
     val topRatedMovieState: TopRatedMovieState = TopRatedMovieState.Empty,
-    val topRatedTvShowState: TopRatedTvShowState = TopRatedTvShowState.Empty
+    val topRatedTvShowState: TopRatedTvShowState = TopRatedTvShowState.Empty,
+    val selectedPopularMediaType: Int = 0, // 0 for movies, 1 for TV shows
+    val selectedTopRatedMediaType: Int = 0, // 0 for movies, 1 for TV shows
+    val selectedTrendingType: Int = 0,// 0 for daily, 1 for weekly
 )
 
 sealed class PopularMovieState {

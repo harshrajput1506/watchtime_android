@@ -283,7 +283,7 @@ private fun SeasonHeader(
                         NetworkImageLoader(
                             modifier = Modifier
                                 .size(120.dp, 180.dp)
-                                .sharedElement(
+                                .sharedBounds(
                                     rememberSharedContentState("season_poster_${seasonName}_${posterPath}"),
                                     animatedVisibilityScope = animatedVisibilityScope1
                                 )

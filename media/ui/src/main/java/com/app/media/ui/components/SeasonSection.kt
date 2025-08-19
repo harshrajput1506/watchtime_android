@@ -89,7 +89,7 @@ private fun SeasonCard(
                 modifier = Modifier
                     .width(120.dp)
                     .aspectRatio(0.65f)
-                    .sharedElement(
+                    .sharedBounds(
                         rememberSharedContentState("season_poster_${season.name}_${season.posterPath}"),
                         animatedVisibilityScope = animatedVisibilityScope
                     )

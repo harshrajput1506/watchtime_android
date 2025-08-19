@@ -55,9 +55,9 @@ fun MediaCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(0.65f)
-                        .sharedElement(
+                        .sharedBounds(
                             rememberSharedContentState(posterKey),
-                            animatedVisibilityScope = animatedVisibilityScope
+                            animatedVisibilityScope = animatedVisibilityScope,
                         )
                         .clip(MaterialTheme.shapes.medium),
                     imageUrl = media.posterUrl,

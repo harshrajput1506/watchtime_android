@@ -12,10 +12,13 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun BottomNavigationBar(
+    modifier: Modifier = Modifier,
     selected: HomeDestination,
     onItemClick: (HomeDestination) -> Unit = {},
 ) {
-    NavigationBar {
+    NavigationBar(
+        modifier = modifier
+    ) {
         NavigationBarItem(
             selected = selected::class == HomeDestination.Popular::class,
             onClick = {

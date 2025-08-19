@@ -1,7 +1,6 @@
 // HomeScreen.kt
 package com.app.core.home
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -40,35 +39,35 @@ fun HomeScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            AnimatedVisibility(visible = true) {
-                BottomNavigationBar(
-                    modifier = with(sharedTransitionScope) {
-                        Modifier
-                            .renderInSharedTransitionScopeOverlay(
-                                zIndexInOverlay = 1f,
-                            )
-                            .animateEnterExit(
-                                enter = fadeIn() + slideInVertically {
-                                    it
-                                },
-                                exit = fadeOut() + slideOutVertically {
-                                    it
+            with(animatedVisibilityScope) {
+                with(sharedTransitionScope) {
+                    BottomNavigationBar(
+                        modifier =
+                            Modifier
+                                .renderInSharedTransitionScopeOverlay(
+                                    zIndexInOverlay = 1f,
+                                )
+                                .animateEnterExit(
+                                    enter = fadeIn() + slideInVertically {
+                                        it
+                                    },
+                                    exit = fadeOut() + slideOutVertically {
+                                        it
+                                    }
+                                ),
+                        selected = selectedTab,
+                        onItemClick = { dest ->
+                            if (!currentDestination?.hasRoute(dest::class.java)!!) {
+                                navController.navigate(dest) {
+                                    popUpTo(HomeDestination.Popular) { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                            )
-                    },
-                    selected = selectedTab,
-                    onItemClick = { dest ->
-                        if (!currentDestination?.hasRoute(dest::class.java)!!) {
-                            navController.navigate(dest) {
-                                popUpTo(HomeDestination.Popular) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
                             }
                         }
-                    }
-                )
+                    )
+                }
             }
-
         }
     ) { innerPadding ->
         HomeNavigation(

@@ -1,5 +1,6 @@
 package com.app.core.ui.composables
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -45,11 +46,14 @@ fun NetworkImageLoader(
             AsyncImagePainter.State.Empty -> Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(color = MaterialTheme.colorScheme.surfaceVariant)
                     .shimmer()
             )
 
             is AsyncImagePainter.State.Error -> Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -63,6 +67,7 @@ fun NetworkImageLoader(
             is AsyncImagePainter.State.Loading -> Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(color = MaterialTheme.colorScheme.surfaceVariant)
                     .shimmer()
             )
 

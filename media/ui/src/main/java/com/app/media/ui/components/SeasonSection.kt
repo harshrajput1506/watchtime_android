@@ -15,7 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.app.core.network.util.ImageUrlBuilder
@@ -78,7 +78,12 @@ private fun SeasonCard(
         Column(
             modifier = modifier
                 .width(120.dp)
-                .clickable(onClick = onClick),
+                .clickable(onClick = onClick)
+                .sharedBounds(
+                    rememberSharedContentState("season_card_${season.posterPath}"),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                ),
             verticalArrangement = Arrangement.spacedBy(4.dp),
 
             ) {
@@ -91,9 +96,10 @@ private fun SeasonCard(
                     .aspectRatio(0.65f)
                     .sharedBounds(
                         rememberSharedContentState("season_poster_${season.name}_${season.posterPath}"),
-                        animatedVisibilityScope = animatedVisibilityScope
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                     )
-                    .clip(MaterialTheme.shapes.medium),
+                    .shadow(4.dp, MaterialTheme.shapes.medium, clip = true),
             )
             Text(
                 modifier = Modifier

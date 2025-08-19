@@ -27,7 +27,6 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -38,7 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -77,65 +76,72 @@ fun MediaDetailsScreen(
     val scrollState = rememberScrollState()
 
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-    ) { paddingValues ->
-        Column(
+    with(sharedTransitionScope) {
+        Scaffold(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = paddingValues.calculateBottomPadding())
-                .verticalScroll(scrollState)
-        ) {
+                .sharedBounds(
+                    rememberSharedContentState("card_$posterKey"),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                ),
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = paddingValues.calculateBottomPadding())
+                    .verticalScroll(scrollState)
+            ) {
 
 
-            PosterSection(
-                isLoading = state is MediaDetailsState.Loading,
-                details = (state as? MediaDetailsState.Success)?.mediaDetails,
-                sharedTransitionScope = sharedTransitionScope,
-                animatedVisibilityScope = animatedVisibilityScope,
-                posterKey = posterKey,
-                posterUrl = posterUrl,
-                onNavigateBack = onNavigateBack
-            )
+                PosterSection(
+                    isLoading = state is MediaDetailsState.Loading,
+                    details = (state as? MediaDetailsState.Success)?.mediaDetails,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    posterKey = posterKey,
+                    posterUrl = posterUrl,
+                    onNavigateBack = onNavigateBack
+                )
 
-            // Content Section
-            when (state) {
-                is MediaDetailsState.Loading -> {
-                    MediaShimmerPlaceHolder()
+                // Content Section
+                when (state) {
+                    is MediaDetailsState.Loading -> {
+                        MediaShimmerPlaceHolder()
+                    }
+
+                    is MediaDetailsState.Success -> {
+                        val successState = state as MediaDetailsState.Success
+                        MediaDetailsSection(
+                            mediaDetails = successState.mediaDetails,
+                            cast = successState.cast,
+                            mediaType = mediaType,
+                            onSeasonClick = { posterPath, seasonNumber, seasonName ->
+                                onNavigateToSeason(
+                                    posterPath,
+                                    mediaId,
+                                    seasonNumber,
+                                    seasonName,
+                                    successState.mediaDetails.title
+                                )
+                            },
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedVisibilityScope = animatedVisibilityScope
+                        )
+                    }
+
+                    is MediaDetailsState.Error -> {
+                        ErrorScreen(
+                            message = (state as MediaDetailsState.Error).message,
+                            onNavigateBack = onNavigateBack
+                        )
+                    }
                 }
 
-                is MediaDetailsState.Success -> {
-                    val successState = state as MediaDetailsState.Success
-                    MediaDetailsSection(
-                        mediaDetails = successState.mediaDetails,
-                        cast = successState.cast,
-                        mediaType = mediaType,
-                        onSeasonClick = { posterPath, seasonNumber, seasonName ->
-                            onNavigateToSeason(
-                                posterPath,
-                                mediaId,
-                                seasonNumber,
-                                seasonName,
-                                successState.mediaDetails.title
-                            )
-                        },
-                        sharedTransitionScope = sharedTransitionScope,
-                        animatedVisibilityScope = animatedVisibilityScope
-                    )
-                }
-
-                is MediaDetailsState.Error -> {
-                    ErrorScreen(
-                        message = (state as MediaDetailsState.Error).message,
-                        onNavigateBack = onNavigateBack
-                    )
-                }
             }
 
         }
-
     }
-
 
 }
 
@@ -187,31 +193,21 @@ fun PosterSection(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Card(
+                    NetworkImageLoader(
                         modifier = Modifier
-                            .align(Alignment.Center),
-
-                        shape = MaterialTheme.shapes.medium,
-                        elevation = CardDefaults.elevatedCardElevation(
-                            defaultElevation = 4.dp
-                        )
-                    ) {
-                        with(sharedTransitionScope) {
-                            NetworkImageLoader(
-                                modifier = Modifier
-                                    .fillMaxHeight(0.8f)
-                                    .aspectRatio(0.65f)
-                                    .sharedBounds(
-                                        rememberSharedContentState(posterKey),
-                                        animatedVisibilityScope = animatedVisibilityScope,
-                                    )
-                                    .clip(MaterialTheme.shapes.medium),
-                                imageUrl = posterUrl,
-                                imageKey = posterKey,
-                                contentDescription = details?.title ?: "Media Poster",
+                            .align(Alignment.Center)
+                            .fillMaxHeight(0.8f)
+                            .aspectRatio(0.65f)
+                            .sharedBounds(
+                                rememberSharedContentState(posterKey),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                             )
-                        }
-                    }
+                            .shadow(4.dp, MaterialTheme.shapes.medium, clip = true),
+                        imageUrl = posterUrl,
+                        imageKey = posterKey,
+                        contentDescription = details?.title ?: "Media Poster",
+                    )
 
                     FilledIconButton(
                         modifier = Modifier

@@ -38,7 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -86,63 +86,71 @@ fun SeasonsScreen(
         }
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize()
-    ) { paddingValues ->
-        Column(
+    with(sharedTransitionScope) {
+        Scaffold(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            // Top Bar - Fixed at top
-            SharedTransitionLayout {
-                AnimatedContent(
-                    targetState = isTopBarCollapsed
-                ) { targetState ->
-                    when {
-                        targetState -> TopBar(
-                            seasonName = seasonName,
-                            onNavigateBack = onNavigateBack,
-                            sharedTransitionScope = this@SharedTransitionLayout,
-                            animatedVisibilityScope = this@AnimatedContent
-                        )
+                .sharedBounds(
+                    rememberSharedContentState("season_card_$posterPath"),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                )
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                // Top Bar - Fixed at top
+                SharedTransitionLayout {
+                    AnimatedContent(
+                        targetState = isTopBarCollapsed
+                    ) { targetState ->
+                        when {
+                            targetState -> TopBar(
+                                seasonName = seasonName,
+                                onNavigateBack = onNavigateBack,
+                                sharedTransitionScope = this@SharedTransitionLayout,
+                                animatedVisibilityScope = this@AnimatedContent
+                            )
 
-                        else -> SeasonHeader(
-                            seasonName = seasonName,
-                            tvName = tvName,
-                            seasonDetails = (state as? SeasonState.Success)?.seasonDetails,
-                            posterPath = posterPath, // posterUrl,
-                            sharedTransitionScope = this@SharedTransitionLayout,
-                            animatedVisibilityScope = this@AnimatedContent,
-                            sharedTransitionScope1 = sharedTransitionScope,
-                            animatedVisibilityScope1 = animatedVisibilityScope,
-                            onNavigateBack = onNavigateBack
-                        )
+                            else -> SeasonHeader(
+                                seasonName = seasonName,
+                                tvName = tvName,
+                                seasonDetails = (state as? SeasonState.Success)?.seasonDetails,
+                                posterPath = posterPath, // posterUrl,
+                                sharedTransitionScope = this@SharedTransitionLayout,
+                                animatedVisibilityScope = this@AnimatedContent,
+                                sharedTransitionScope1 = sharedTransitionScope,
+                                animatedVisibilityScope1 = animatedVisibilityScope,
+                                onNavigateBack = onNavigateBack
+                            )
+                        }
                     }
                 }
-            }
 
-            // Content based on state
-            when (state) {
-                is SeasonState.Loading -> {
-                    SeasonShimmerPlaceHolder()
-                }
+                // Content based on state
+                when (state) {
+                    is SeasonState.Loading -> {
+                        SeasonShimmerPlaceHolder()
+                    }
 
-                is SeasonState.Success -> {
-                    SeasonDetailsContent(
-                        seasonDetails = (state as SeasonState.Success).seasonDetails,
-                        scrollState = scrollState,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
+                    is SeasonState.Success -> {
+                        SeasonDetailsContent(
+                            seasonDetails = (state as SeasonState.Success).seasonDetails,
+                            scrollState = scrollState,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
 
-                is SeasonState.Error -> {
-                    SeasonShimmerPlaceHolder()
-                    /*ErrorScreen(
-                        message = state.message,
-                        onNavigateBack = onNavigateBack,
-                        modifier = Modifier.weight(1f)
-                    )*/
+                    is SeasonState.Error -> {
+                        SeasonShimmerPlaceHolder()
+                        /*ErrorScreen(
+                            message = state.message,
+                            onNavigateBack = onNavigateBack,
+                            modifier = Modifier.weight(1f)
+                        )*/
+                    }
                 }
             }
         }
@@ -222,7 +230,7 @@ private fun TopBar(
                     .padding(start = 8.dp)
                     .sharedElement(
                         rememberSharedContentState("season_title"),
-                        animatedVisibilityScope = animatedVisibilityScope
+                        animatedVisibilityScope = animatedVisibilityScope,
                     )
             )
         }
@@ -275,27 +283,24 @@ private fun SeasonHeader(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // Season Poster
-                Card(
-                    shape = MaterialTheme.shapes.medium,
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                ) {
-                    with(sharedTransitionScope1) {
-                        NetworkImageLoader(
-                            modifier = Modifier
-                                .size(120.dp, 180.dp)
-                                .sharedBounds(
-                                    rememberSharedContentState("season_poster_${seasonName}_${posterPath}"),
-                                    animatedVisibilityScope = animatedVisibilityScope1
-                                )
-                                .clip(MaterialTheme.shapes.medium),
-                            imageUrl = ImageUrlBuilder.buildImageUrl(
-                                posterPath,
-                                ImageUrlBuilder.ImageSize.W342
-                            ),
-                            contentDescription = seasonName,
-                            imageKey = "season_poster_${seasonName}_${posterPath}",
-                        )
-                    }
+
+                with(sharedTransitionScope1) {
+                    NetworkImageLoader(
+                        modifier = Modifier
+                            .size(120.dp, 180.dp)
+                            .sharedBounds(
+                                rememberSharedContentState("season_poster_${seasonName}_${posterPath}"),
+                                animatedVisibilityScope = animatedVisibilityScope1,
+                                resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                            )
+                            .shadow(12.dp, MaterialTheme.shapes.medium, clip = true),
+                        imageUrl = ImageUrlBuilder.buildImageUrl(
+                            posterPath,
+                            ImageUrlBuilder.ImageSize.W342
+                        ),
+                        contentDescription = seasonName,
+                        imageKey = "season_poster_${seasonName}_${posterPath}",
+                    )
                 }
 
                 // Season Info

@@ -37,6 +37,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -326,27 +327,32 @@ private fun CollapsedTopBar(
 
     ) {
     // Collapsed top bar
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shadowElevation = 8.dp
     ) {
-        Text(
-            "Discover",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = textModifier
-        )
-
-        IconButton(
-            onClick = onSearchClick
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_search),
-                contentDescription = "Search",
-                modifier = Modifier.size(24.dp)
+            Text(
+                "Discover",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = textModifier
             )
+
+            IconButton(
+                onClick = onSearchClick
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_search),
+                    contentDescription = "Search",
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
 }

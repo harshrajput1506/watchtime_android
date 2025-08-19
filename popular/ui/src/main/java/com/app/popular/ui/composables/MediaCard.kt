@@ -18,7 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -38,44 +38,46 @@ fun MediaCard(
     onClick: (Int, String, String?, String) -> Unit,
 ) {
     val posterKey = "${label.lowercase()}_poster_${media.id}"
-    Column(
-        modifier = modifier
-            .width(width)
-            .aspectRatio(0.52f)
-            .clickable {
-                onClick(media.id, media.type.name, media.posterUrl, posterKey)
-            }
-    ) {
-        Card(
-            shape = MaterialTheme.shapes.medium,
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-        ) {
-            with(sharedTransitionScope) {
-                NetworkImageLoader(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(0.65f)
-                        .sharedBounds(
-                            rememberSharedContentState(posterKey),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                        )
-                        .clip(MaterialTheme.shapes.medium),
-                    imageUrl = media.posterUrl,
-                    imageKey = posterKey,
-                    contentDescription = media.title,
+    with(sharedTransitionScope) {
+        Column(
+            modifier = modifier
+                .width(width)
+                .aspectRatio(0.52f)
+                .clickable {
+                    onClick(media.id, media.type.name, media.posterUrl, posterKey)
+                }
+                .sharedBounds(
+                    rememberSharedContentState("card_$posterKey"),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
                 )
-            }
+        ) {
+            NetworkImageLoader(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(0.65f)
+                    .sharedBounds(
+                        rememberSharedContentState(posterKey),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                    )
+                    .shadow(4.dp, MaterialTheme.shapes.medium, clip = true),
+                imageUrl = media.posterUrl,
+                imageKey = posterKey,
+                contentDescription = media.title,
+            )
+
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = media.title,
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+
         }
-
-        Spacer(Modifier.height(4.dp))
-        Text(
-            text = media.title,
-            style = MaterialTheme.typography.titleSmall,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
-
     }
+
 }
 
 @Composable

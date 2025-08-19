@@ -17,11 +17,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.app.core.network.util.ImageUrlBuilder
+import com.app.core.ui.composables.NetworkImageLoader
 import com.app.media.domain.model.CastMember
 
 
@@ -59,16 +58,15 @@ private fun CastMemberCard(
             .width(100.dp)
             .aspectRatio(0.7f)
     ) {
-        AsyncImage(
-            model = ImageUrlBuilder.buildImageUrl(
+        NetworkImageLoader(
+            modifier = Modifier
+                .size(100.dp)
+                .clip(CircleShape),
+            imageUrl = ImageUrlBuilder.buildImageUrl(
                 member.profilePath,
                 ImageUrlBuilder.ImageSize.W185
             ),
             contentDescription = member.name,
-            modifier = Modifier
-                .size(100.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.height(8.dp))
 

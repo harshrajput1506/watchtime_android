@@ -18,4 +18,13 @@ sealed class Screen {
         val posterUrl: String?,
         val posterKey: String
     ) : Screen()
+
+    @Serializable
+    data class Season(
+        val tvId: Int,
+        val seasonNumber: Int,
+        val tvName: String,
+        val seasonName: String,
+        val posterPath: String?
+    )
 }

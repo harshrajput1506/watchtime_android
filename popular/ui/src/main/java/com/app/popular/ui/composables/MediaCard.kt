@@ -11,30 +11,18 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImagePainter
-import coil3.compose.SubcomposeAsyncImage
-import coil3.compose.SubcomposeAsyncImageContent
-import coil3.request.ImageRequest
-import coil3.request.crossfade
-import com.app.core.ui.R
+import com.app.core.ui.composables.NetworkImageLoader
 import com.app.core.ui.composables.shimmer
 import com.app.popular.domain.entities.Media
 
@@ -62,54 +50,20 @@ fun MediaCard(
             shape = MaterialTheme.shapes.medium,
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
-            SubcomposeAsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(media.posterUrl)
-                    .crossfade(true)
-                    .placeholderMemoryCacheKey(posterKey)
-                    .memoryCacheKey(posterKey)
-                    .build(),
-                contentDescription = media.title,
-                modifier = with(sharedTransitionScope) {
-                    Modifier
+            with(sharedTransitionScope) {
+                NetworkImageLoader(
+                    modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(0.65f)
                         .sharedElement(
                             rememberSharedContentState(posterKey),
                             animatedVisibilityScope = animatedVisibilityScope
                         )
-                        .clip(MaterialTheme.shapes.medium)
-                },
-                contentScale = ContentScale.Crop
-            ) {
-                val state = painter.state.collectAsState().value
-                when (state) {
-                    AsyncImagePainter.State.Empty -> Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .shimmer()
-                    )
-
-                    is AsyncImagePainter.State.Error -> Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_broken_image),
-                            contentDescription = "Broken Image",
-                            modifier = Modifier.size(32.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                        )
-                    }
-
-                    is AsyncImagePainter.State.Loading -> Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .shimmer()
-                    )
-
-                    is AsyncImagePainter.State.Success -> SubcomposeAsyncImageContent()
-                }
+                        .clip(MaterialTheme.shapes.medium),
+                    imageUrl = media.posterUrl,
+                    imageKey = posterKey,
+                    contentDescription = media.title,
+                )
             }
         }
 

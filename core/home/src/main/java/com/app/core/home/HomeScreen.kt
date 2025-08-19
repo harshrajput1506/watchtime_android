@@ -40,7 +40,6 @@ fun HomeScreen(
                 onItemClick = { dest ->
                     if (!currentDestination?.hasRoute(dest::class.java)!!) {
                         navController.navigate(dest) {
-                            // Standard bottom bar pattern: keep state per tab
                             popUpTo(HomeDestination.Popular) { saveState = true }
                             launchSingleTop = true
                             restoreState = true

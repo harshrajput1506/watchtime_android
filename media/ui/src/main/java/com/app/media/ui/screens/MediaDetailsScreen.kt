@@ -1,7 +1,6 @@
 package com.app.media.ui.screens
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -33,36 +32,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import coil3.compose.AsyncImagePainter
-import coil3.compose.SubcomposeAsyncImage
-import coil3.compose.SubcomposeAsyncImageContent
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.app.core.network.util.ImageUrlBuilder
+import com.app.core.ui.composables.NetworkImageLoader
 import com.app.core.utils.DateTimeUtils
 import com.app.media.domain.model.Cast
 import com.app.media.domain.model.MediaDetails
 import com.app.media.ui.components.CastSection
 import com.app.media.ui.components.GenreChip
+import com.app.media.ui.components.MediaShimmerPlaceHolder
 import com.app.media.ui.components.SeasonsSection
-import com.app.media.ui.components.ShimmerPlaceHolder
-import com.app.media.ui.components.ShimmerPoster
 import com.app.media.ui.components.UserScoreBar
 import com.app.media.ui.state.MediaDetailsState
 import com.app.media.ui.viewmodel.MediaDetailsViewModel
-import org.koin.compose.viewmodel.koinViewModel
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -74,16 +64,13 @@ fun MediaDetailsScreen(
     posterKey: String,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    viewModel: MediaDetailsViewModel = koinViewModel(),
-    onNavigateBack: () -> Unit = {}
+    viewModel: MediaDetailsViewModel,
+    onNavigateBack: () -> Unit = {},
+    onNavigateToSeason: (posterPath: String?, tvId: Int, seasonNumber: Int, seasonName: String, tvName: String) -> Unit = { _, _, _, _, _ -> }
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
-    // load data
-    LaunchedEffect(mediaId, mediaType) {
-        viewModel.loadMediaDetails(mediaId, mediaType)
-    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -109,7 +96,7 @@ fun MediaDetailsScreen(
             // Content Section
             when (state) {
                 is MediaDetailsState.Loading -> {
-                    ShimmerPlaceHolder()
+                    MediaShimmerPlaceHolder()
                 }
 
                 is MediaDetailsState.Success -> {
@@ -118,9 +105,17 @@ fun MediaDetailsScreen(
                         mediaDetails = successState.mediaDetails,
                         cast = successState.cast,
                         mediaType = mediaType,
-                        onSeasonClick = { seasonNumber ->
-                            //viewModel.loadSeasonDetails(mediaId, seasonNumber, mediaType)
-                        }
+                        onSeasonClick = { posterPath, seasonNumber, seasonName ->
+                            onNavigateToSeason(
+                                posterPath,
+                                mediaId,
+                                seasonNumber,
+                                seasonName,
+                                successState.mediaDetails.title
+                            )
+                        },
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope
                     )
                 }
 
@@ -196,41 +191,21 @@ fun PosterSection(
                             defaultElevation = 4.dp
                         )
                     ) {
-                        SubcomposeAsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(
-                                    posterUrl
-                                )
-                                .crossfade(true)
-                                .placeholderMemoryCacheKey(posterKey)
-                                .memoryCacheKey(posterKey)
-                                .diskCacheKey(posterKey)
-                                .build(),
-                            modifier = Modifier
-                                .fillMaxHeight(0.8f)
-                                .aspectRatio(0.65f)
-                                .sharedElement(
-                                    rememberSharedContentState(posterKey),
-                                    animatedVisibilityScope = animatedVisibilityScope
-                                )
-                                .clip(
-                                    MaterialTheme.shapes.medium
-                                ),
-                            contentDescription = details?.title,
-                            contentScale = ContentScale.Crop
-                        ) {
-                            val state = painter.state.collectAsState().value
-                            Log.d("MediaDetailsScreen", "PosterSection: $state")
-                            when (state) {
-                                AsyncImagePainter.State.Empty -> ShimmerPoster()
-                                is AsyncImagePainter.State.Error -> ShimmerPoster(isError = true)
-                                is AsyncImagePainter.State.Loading -> ShimmerPoster()
-                                is AsyncImagePainter.State.Success -> SubcomposeAsyncImageContent()
-                            }
-
-
+                        with(sharedTransitionScope) {
+                            NetworkImageLoader(
+                                modifier = Modifier
+                                    .fillMaxHeight(0.8f)
+                                    .aspectRatio(0.65f)
+                                    .sharedElement(
+                                        rememberSharedContentState(posterKey),
+                                        animatedVisibilityScope = animatedVisibilityScope
+                                    )
+                                    .clip(MaterialTheme.shapes.medium),
+                                imageUrl = posterUrl,
+                                imageKey = posterKey,
+                                contentDescription = details?.title ?: "Media Poster",
+                            )
                         }
-
                     }
 
                     FilledIconButton(
@@ -259,13 +234,16 @@ fun PosterSection(
 }
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun MediaDetailsSection(
     modifier: Modifier = Modifier,
     mediaDetails: MediaDetails,
     cast: Cast?,
     mediaType: String,
-    onSeasonClick: (Int) -> Unit
+    onSeasonClick: (String?, Int, String) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
 
     Column(
@@ -350,7 +328,9 @@ private fun MediaDetailsSection(
         if (mediaType.lowercase() == "tv" && mediaDetails.seasons.isNotEmpty()) {
             SeasonsSection(
                 seasons = mediaDetails.seasons,
-                onSeasonClick = onSeasonClick
+                onSeasonClick = onSeasonClick,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope
             )
         }
     }

@@ -11,13 +11,19 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class MediaDetailsViewModel(
+    private val mediaId: Int,
+    private val mediaType: String,
     private val mediaRepository: MediaRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<MediaDetailsState>(MediaDetailsState.Loading)
     val state: StateFlow<MediaDetailsState> = _state.asStateFlow()
 
-    fun loadMediaDetails(mediaId: Int, mediaType: String) {
+    init {
+        loadMediaDetails(mediaId, mediaType)
+    }
+
+    private fun loadMediaDetails(mediaId: Int, mediaType: String) {
         viewModelScope.launch {
             _state.value = MediaDetailsState.Loading
 

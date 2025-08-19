@@ -49,7 +49,13 @@ fun HomeNavigation(
                 sharedTransitionScope = sharedTransitionScope,
                 animatedVisibilityScope = animatedVisibilityScope,
                 onNavigateToMediaDetails = navigateToMediaDetails,
-                onNavigateToDiscover = { navController.navigate(HomeDestination.Discover) }
+                onNavigateToDiscover = {
+                    navController.navigate(HomeDestination.Discover) {
+                        popUpTo(HomeDestination.Popular) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
             )
         }
 

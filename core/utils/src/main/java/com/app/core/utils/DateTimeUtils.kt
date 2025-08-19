@@ -14,4 +14,10 @@ object DateTimeUtils {
         return date.format(formatter)
     }
 
+    fun isDateInFuture(input: String): Boolean {
+        val parser = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH)
+        val date = LocalDate.parse(input, parser)
+        return date.isAfter(LocalDate.now())
+    }
+
 }

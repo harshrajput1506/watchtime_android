@@ -8,4 +8,5 @@ sealed class Failure : Throwable() {
     data class UnknownError(override val message: String? = null) : Failure()
     data class AuthenticationError(override val message: String? = null) : Failure()
     data class AuthenticationCancelled(override val message: String? = null) : Failure()
+    data class DataError(override val message: String? = null) : Failure()
 }

@@ -28,7 +28,7 @@ fun AppNavigation(
         is AuthState.Unauthenticated -> false
         else -> false // Handle other states if necessary
     }
-    val startDestination = if (userAuthenticated) Screen.Home else Screen.Home
+    val startDestination = if (userAuthenticated) Screen.Home else Screen.Auth
 
     SharedTransitionLayout {
         NavHost(navController = navController, startDestination = startDestination) {

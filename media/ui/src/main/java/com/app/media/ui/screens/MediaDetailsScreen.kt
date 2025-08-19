@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,7 +23,9 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledIconButton
@@ -38,10 +41,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.app.core.network.util.ImageUrlBuilder
+import com.app.core.ui.R
 import com.app.core.ui.composables.NetworkImageLoader
 import com.app.core.utils.DateTimeUtils
 import com.app.media.domain.model.Cast
@@ -293,6 +298,11 @@ private fun MediaDetailsSection(
             UserScoreBar(rating = mediaDetails.voteAverage)
         }
 
+        Spacer(Modifier.height(16.dp))
+
+        // Actions
+        MediaActionButtons()
+
         Spacer(Modifier.height(24.dp))
 
         // Overview
@@ -333,6 +343,53 @@ private fun MediaDetailsSection(
                 animatedVisibilityScope = animatedVisibilityScope
             )
         }
+    }
+}
+
+
+@Composable
+private fun MediaActionButtons() {
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        FilledIconButton(
+            onClick = { /* TODO: Implement Watch Action */ }, colors =
+                IconButtonDefaults.filledIconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                )
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_bookmar_add),
+                contentDescription = "Add to Collection",
+            )
+        }
+        FilledIconButton(
+            onClick = { /* TODO: Implement Watch Action */ },
+            colors = IconButtonDefaults.filledIconButtonColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer
+            )
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Add,
+                contentDescription = "Add to Collection",
+            )
+        }
+        Button(
+            onClick = { /* TODO: Implement Watch Action */ },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer
+            )
+        ) {
+            Text(
+                "Already Watched?",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
     }
 }
 

@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
+    id("kotlin-kapt")
 
 }
 
@@ -53,7 +54,6 @@ dependencies {
     implementation(project(":auth:ui"))
     implementation(project(":auth:data"))
 
-
     // popular modules
     implementation(project(":popular:data"))
     implementation(project(":popular:ui"))
@@ -65,6 +65,9 @@ dependencies {
     // media modules
     implementation(project(":media:data"))
     implementation(project(":media:ui"))
+
+    // collections modules
+    implementation(project(":collections:data"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

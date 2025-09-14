@@ -366,7 +366,7 @@ private fun MediaActionButtons(
             onClick = onToggleWatchlist,
             colors =
                 IconButtonDefaults.filledIconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    containerColor = if (isInWatchlist) MaterialTheme.colorScheme.primary else  MaterialTheme.colorScheme.surfaceContainer
                 )
         ) {
         // Watchlist button
@@ -376,16 +376,13 @@ private fun MediaActionButtons(
                 tint = if (isInWatchlist)
                     MaterialTheme.colorScheme.onPrimary
                 else
-                    MaterialTheme.colorScheme.onSurface,
+                    MaterialTheme.colorScheme.onSurface
             )
         }
         FilledIconButton(
             onClick =onShowAddToCollection,
             colors = IconButtonDefaults.filledIconButtonColors(
-                containerColor = if (isInWatchlist)
-                    MaterialTheme.colorScheme.onPrimary
-                else
-                    MaterialTheme.colorScheme.onSurface
+                containerColor = MaterialTheme.colorScheme.surfaceContainer
             )
         ) {
 
@@ -399,7 +396,7 @@ private fun MediaActionButtons(
         Button(
             onClick = onToggleAlreadyWatched,
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                containerColor = if (isAlreadyWatched) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainer
 
             )
         ) {

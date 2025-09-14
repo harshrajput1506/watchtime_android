@@ -2,6 +2,7 @@ package com.app.watchtime.di
 
 import com.app.auth.data.di.authDataModule
 import com.app.auth.ui.di.authUiModule
+import com.app.collections.data.module.collectionDataModule
 import com.app.core.network.di.networkModule
 import com.app.core.room.di.roomModule
 import com.app.discover.data.di.discoverDataModule
@@ -19,7 +20,8 @@ val appModules = listOf(
     popularUiModule,
     discoverDataModule,
     discoverUiModule,
+    roomModule,
+    collectionDataModule,
     mediaDataModule,
     mediaUiModule,
-    roomModule
 )

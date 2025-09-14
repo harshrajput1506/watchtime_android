@@ -1,6 +1,7 @@
 package com.app.media.ui.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -36,6 +37,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +54,7 @@ import com.app.core.ui.composables.NetworkImageLoader
 import com.app.core.utils.DateTimeUtils
 import com.app.media.domain.model.Cast
 import com.app.media.domain.model.MediaDetails
+import com.app.media.ui.components.AddToCollectionBottomSheet
 import com.app.media.ui.components.CastSection
 import com.app.media.ui.components.GenreChip
 import com.app.media.ui.components.MediaShimmerPlaceHolder
@@ -76,7 +79,37 @@ fun MediaDetailsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
+    val showCollectionSheet by viewModel.showCollectionBottomSheet.collectAsStateWithLifecycle()
+    val isCreatingCollection by viewModel.isCreatingCollection.collectAsStateWithLifecycle()
+    val availableCollections by viewModel.availableCollections.collectAsStateWithLifecycle()
+    val selectedCollections by viewModel.selectedCollections.collectAsStateWithLifecycle()
 
+    // log all bottomsheet states
+    LaunchedEffect(
+        showCollectionSheet,
+        isCreatingCollection,
+        availableCollections,
+        selectedCollections
+    ) {
+        Log.d("MediaDetailsScreen", "showCollectionSheet: $showCollectionSheet")
+        Log.d("MediaDetailsScreen", "isCreatingCollection: $isCreatingCollection")
+        Log.d("MediaDetailsScreen", "availableCollections: $availableCollections")
+        Log.d("MediaDetailsScreen", "selectedCollections: $selectedCollections")
+    }
+
+    AddToCollectionBottomSheet(
+        showBottomSheet = showCollectionSheet,
+        availableCollections = availableCollections,
+        selectedCollections = selectedCollections,
+        isCreatingCollection = isCreatingCollection,
+        onToggleCollection = { collectionId ->
+            viewModel.toggleCollectionSelection(collectionId)
+        },
+        onDismiss = { viewModel.hideCollectionBottomSheet() }, // dismiss
+        onCreateCollection = { name, description ->
+            viewModel.createNewCollection(name, description, false)
+        },
+    )
 
     with(sharedTransitionScope) {
         Scaffold(
@@ -313,6 +346,16 @@ private fun MediaDetailsSection(
 
         Spacer(Modifier.height(16.dp))
 
+        // Overview
+        if (mediaDetails.overview.isNotEmpty()) {
+            Text(
+                text = mediaDetails.overview,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.height(16.dp))
+        }
+
         // Genres
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
@@ -360,16 +403,30 @@ private fun MediaActionButtons(
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically ) {
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Add to Collection Button
+        FilledIconButton(
+            onClick = onShowAddToCollection,
+            colors = IconButtonDefaults.filledIconButtonColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer
+            )
+        ) {
 
+            Icon(
+                contentDescription = "Add to Collection",
+                painter = painterResource(id = R.drawable.ic_bookmar_add),
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
+        // Watchlist Button
         FilledIconButton(
             onClick = onToggleWatchlist,
             colors =
                 IconButtonDefaults.filledIconButtonColors(
-                    containerColor = if (isInWatchlist) MaterialTheme.colorScheme.primary else  MaterialTheme.colorScheme.surfaceContainer
+                    containerColor = if (isInWatchlist) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainer
                 )
         ) {
-        // Watchlist button
             Icon(
                 contentDescription = if (isInWatchlist) "Remove from Watchlist" else "Add to Watchlist",
                 imageVector = if (isInWatchlist) Icons.Rounded.Check else Icons.Rounded.Add,
@@ -379,20 +436,9 @@ private fun MediaActionButtons(
                     MaterialTheme.colorScheme.onSurface
             )
         }
-        FilledIconButton(
-            onClick =onShowAddToCollection,
-            colors = IconButtonDefaults.filledIconButtonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
-            )
-        ) {
 
-        // Add to Collection button
-            Icon(
-                contentDescription = "Add to Collection",
-                painter = painterResource(id = R.drawable.ic_bookmar_add),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
-        }
+
+        // Already Watched button
         Button(
             onClick = onToggleAlreadyWatched,
             colors = ButtonDefaults.buttonColors(
@@ -400,8 +446,6 @@ private fun MediaActionButtons(
 
             )
         ) {
-
-        // Already Watched button
             Text(
                 text = if (isAlreadyWatched) "Already Watched" else "Already Watched?",
                 color = if (isAlreadyWatched)

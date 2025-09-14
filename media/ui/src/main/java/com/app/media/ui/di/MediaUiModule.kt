@@ -1,5 +1,6 @@
 package com.app.media.ui.di
 
+import com.app.auth.domain.repository.AuthRepository
 import com.app.collections.domain.repository.CollectionRepository
 import com.app.media.domain.repository.MediaRepository
 import com.app.media.ui.viewmodel.MediaDetailsViewModel
@@ -14,7 +15,8 @@ val mediaUiModule = module {
             mediaId,
             mediaType,
             get<MediaRepository>(),
-            get<CollectionRepository>()
+            get<CollectionRepository>(),
+            get<AuthRepository>()
         )
     }
     viewModel { SeasonViewModel(get<MediaRepository>()) }

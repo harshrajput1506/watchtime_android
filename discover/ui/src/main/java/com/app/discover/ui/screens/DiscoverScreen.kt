@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalSharedTransitionApi::class)
+
 package com.app.discover.ui.screens
 
 import androidx.compose.animation.AnimatedContent
@@ -150,6 +152,7 @@ fun DiscoverScreen(
                     if (isCollapsed) {
                         CollapsedTopBar(
                             onSearchClick = { isSearchExpanded = true },
+                            isSearchVisible = !isScrolled || isSearchExpanded,
                             textModifier = Modifier
                                 .wrapContentWidth()
                                 .sharedBounds(
@@ -160,7 +163,9 @@ fun DiscoverScreen(
                                     enter = fadeIn(),
                                     exit = fadeOut(),
                                     resizeMode = SharedTransitionScope.ResizeMode.ScaleToBounds()
-                                )
+                                ),
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedVisibilityScope = animatedVisibilityScope
                         )
                     } else {
                         ExpandedTopBar(
@@ -324,37 +329,58 @@ private fun CollapsedTopBar(
     modifier: Modifier = Modifier,
     textModifier: Modifier = Modifier,
     onSearchClick: () -> Unit,
+    isSearchVisible: Boolean,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 
-    ) {
+) {
     // Collapsed top bar
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shadowElevation = 8.dp
-    ) {
-        Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                "Discover",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = textModifier
-            )
-
-            IconButton(
-                onClick = onSearchClick
+    with(animatedVisibilityScope) {
+        with(sharedTransitionScope) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .renderInSharedTransitionScopeOverlay(
+                        zIndexInOverlay = 1f,
+                    )
+                    .animateEnterExit(
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ),
+                shadowElevation = 8.dp
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_search),
-                    contentDescription = "Search",
-                    modifier = Modifier.size(24.dp)
-                )
+                Row(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Discover",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = textModifier
+                    )
+
+                    AnimatedVisibility(
+                        visible = !isSearchVisible
+                    ) {
+                        IconButton(
+                            onClick = onSearchClick
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_search),
+                                contentDescription = "Search",
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                }
             }
         }
     }
+
+
 }
 
 @Composable
@@ -381,15 +407,20 @@ private fun ExpandedTopBar(
 
         Spacer(Modifier.height(8.dp))
 
-        DiscoverSearchBar(
-            label = if (uiState.selectedMediaType == 0) "Search Movies" else "Search TV Shows",
-            query = uiState.searchQuery,
-            onQueryChange = onQueryChange,
-            onSearch = onSearch,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-        )
+        AnimatedVisibility(
+            visible = isSearchVisible
+        ) {
+            DiscoverSearchBar(
+                label = if (uiState.selectedMediaType == 0) "Search Movies" else "Search TV Shows",
+                query = uiState.searchQuery,
+                onQueryChange = onQueryChange,
+                onSearch = onSearch,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+
+                )
+        }
     }
 }
 

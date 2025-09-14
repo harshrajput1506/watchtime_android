@@ -1,7 +1,6 @@
 package com.app.media.ui.screens
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -37,7 +36,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -84,19 +82,6 @@ fun MediaDetailsScreen(
     val availableCollections by viewModel.availableCollections.collectAsStateWithLifecycle()
     val selectedCollections by viewModel.selectedCollections.collectAsStateWithLifecycle()
 
-    // log all bottomsheet states
-    LaunchedEffect(
-        showCollectionSheet,
-        isCreatingCollection,
-        availableCollections,
-        selectedCollections
-    ) {
-        Log.d("MediaDetailsScreen", "showCollectionSheet: $showCollectionSheet")
-        Log.d("MediaDetailsScreen", "isCreatingCollection: $isCreatingCollection")
-        Log.d("MediaDetailsScreen", "availableCollections: $availableCollections")
-        Log.d("MediaDetailsScreen", "selectedCollections: $selectedCollections")
-    }
-
     AddToCollectionBottomSheet(
         showBottomSheet = showCollectionSheet,
         availableCollections = availableCollections,
@@ -115,11 +100,6 @@ fun MediaDetailsScreen(
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
-                .sharedBounds(
-                    rememberSharedContentState("card_$posterKey"),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-                ),
         ) { paddingValues ->
             Column(
                 modifier = Modifier
@@ -132,7 +112,7 @@ fun MediaDetailsScreen(
                 PosterSection(
                     isLoading = state is MediaDetailsState.Loading,
                     details = (state as? MediaDetailsState.Success)?.mediaDetails,
-                    sharedTransitionScope = sharedTransitionScope,
+                    sharedTransitionScope = this@with,
                     animatedVisibilityScope = animatedVisibilityScope,
                     posterKey = posterKey,
                     posterUrl = posterUrl,

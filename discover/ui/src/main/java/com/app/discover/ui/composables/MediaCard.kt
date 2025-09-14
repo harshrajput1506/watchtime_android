@@ -41,11 +41,7 @@ fun MediaCard(
                 .clickable {
                     onClick(media.id, media.type.name, media.posterUrl, posterKey)
                 }
-                .sharedBounds(
-                    rememberSharedContentState("card_$posterKey"),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-                )
+             
         ) {
             NetworkImageLoader(
                 modifier = Modifier

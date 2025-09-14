@@ -1,6 +1,9 @@
+@file:OptIn(ExperimentalSharedTransitionApi::class)
+
 package com.app.media.ui.screens
 
-import androidx.compose.animation.AnimatedContent
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -16,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -80,149 +82,118 @@ fun SeasonsScreen(
     LaunchedEffect(scrollState) {
         snapshotFlow {
             scrollState.firstVisibleItemIndex > 0 ||
-                    (scrollState.firstVisibleItemIndex == 0 && scrollState.firstVisibleItemScrollOffset > 0)
+                    (scrollState.firstVisibleItemIndex == 0 && scrollState.firstVisibleItemScrollOffset > 10)
         }.collect { collapsed ->
+            // log scroll state changes
+            Log.i(
+                "SeasonScreen",
+                "SeasonsScreen: index: ${scrollState.firstVisibleItemIndex}, offset: ${scrollState.firstVisibleItemScrollOffset}"
+            )
             isTopBarCollapsed = collapsed
         }
     }
 
-    with(sharedTransitionScope) {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-                .sharedBounds(
-                    rememberSharedContentState("season_card_$posterPath"),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-                )
-        ) { paddingValues ->
+
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+
+    ) { paddingValues ->
+        SharedTransitionLayout {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
                 // Top Bar - Fixed at top
-                SharedTransitionLayout {
-                    AnimatedContent(
-                        targetState = isTopBarCollapsed
-                    ) { targetState ->
-                        when {
-                            targetState -> TopBar(
-                                seasonName = seasonName,
-                                onNavigateBack = onNavigateBack,
-                                sharedTransitionScope = this@SharedTransitionLayout,
-                                animatedVisibilityScope = this@AnimatedContent
-                            )
+                TopBar(
+                    seasonName = seasonName,
+                    onNavigateBack = onNavigateBack,
+                    isCollapsed = isTopBarCollapsed
+                )
 
-                            else -> SeasonHeader(
-                                seasonName = seasonName,
-                                tvName = tvName,
-                                seasonDetails = (state as? SeasonState.Success)?.seasonDetails,
-                                posterPath = posterPath, // posterUrl,
-                                sharedTransitionScope = this@SharedTransitionLayout,
-                                animatedVisibilityScope = this@AnimatedContent,
-                                sharedTransitionScope1 = sharedTransitionScope,
-                                animatedVisibilityScope1 = animatedVisibilityScope,
-                                onNavigateBack = onNavigateBack
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    state = scrollState
+                ) {
+                    // Season Header
+                    item {
+                        SeasonHeader(
+                            seasonName = seasonName,
+                            tvName = tvName,
+                            seasonDetails = (state as? SeasonState.Success)?.seasonDetails,
+                            posterPath = posterPath, // posterUrl,
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            isCollapsed = isTopBarCollapsed
+                        )
+
+                    }
+
+                    if (state is SeasonState.Success) {
+                        val seasonDetails = (state as SeasonState.Success).seasonDetails
+                        item {
+                            SeasonOverview(seasonDetails.overview)
+                        }
+
+                        // Episodes Section
+                        item {
+                            Text(
+                                text = "Episodes (${seasonDetails.episodes.size})",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(vertical = 8.dp)
                             )
+                        }
+
+                        // Episodes List
+                        items(
+                            items = seasonDetails.episodes,
+                            key = { it.id }
+                        ) { episode ->
+                            EpisodeCard(
+                                episode = episode,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    } else {
+                        item {
+                            SeasonShimmerPlaceHolder()
                         }
                     }
                 }
-
-                // Content based on state
-                when (state) {
-                    is SeasonState.Loading -> {
-                        SeasonShimmerPlaceHolder()
-                    }
-
-                    is SeasonState.Success -> {
-                        SeasonDetailsContent(
-                            seasonDetails = (state as SeasonState.Success).seasonDetails,
-                            scrollState = scrollState,
-                            modifier = Modifier.weight(1f),
-                        )
-                    }
-
-                    is SeasonState.Error -> {
-                        SeasonShimmerPlaceHolder()
-                        /*ErrorScreen(
-                            message = state.message,
-                            onNavigateBack = onNavigateBack,
-                            modifier = Modifier.weight(1f)
-                        )*/
-                    }
-                }
             }
         }
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SeasonDetailsContent(
-    seasonDetails: SeasonDetails,
-    modifier: Modifier = Modifier,
-    scrollState: LazyListState
-) {
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        state = scrollState
-    ) {
-        // Season Header
-        item {
-            SeasonOverview(seasonDetails.overview)
-        }
-
-        // Episodes Section
-        item {
-            Text(
-                text = "Episodes (${seasonDetails.episodes.size})",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-        }
-
-        items(
-            items = seasonDetails.episodes,
-            key = { it.id }
-        ) { episode ->
-            EpisodeCard(
-                episode = episode,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Composable
-private fun TopBar(
+private fun SharedTransitionScope.TopBar(
     seasonName: String,
     onNavigateBack: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    isCollapsed: Boolean
 ) {
-    with(sharedTransitionScope) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .sharedBounds(
-                    rememberSharedContentState("season_top_bar"),
-                    animatedVisibilityScope
-                ),
-            verticalAlignment = Alignment.CenterVertically,
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        IconButton(onClick = onNavigateBack) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
+        AnimatedVisibility(
+            visible = isCollapsed
         ) {
-            IconButton(onClick = onNavigateBack) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
             Text(
                 text = seasonName,
                 style = MaterialTheme.typography.titleLarge,
@@ -230,110 +201,95 @@ private fun TopBar(
                     .padding(start = 8.dp)
                     .sharedElement(
                         rememberSharedContentState("season_title"),
-                        animatedVisibilityScope = animatedVisibilityScope,
+                        animatedVisibilityScope = this,
                     )
             )
         }
     }
+
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SeasonHeader(
+private fun SharedTransitionScope.SeasonHeader(
     seasonName: String,
     tvName: String,
     posterPath: String?,
     seasonDetails: SeasonDetails?,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    sharedTransitionScope1: SharedTransitionScope,
-    animatedVisibilityScope1: AnimatedVisibilityScope,
-    onNavigateBack: () -> Unit
+    isCollapsed: Boolean,
 ) {
-    with(sharedTransitionScope) {
-        Column(
-            modifier = Modifier.sharedBounds(
-                rememberSharedContentState("season_top_bar"),
-                animatedVisibilityScope
-            )
+
+    Column(
+        modifier = Modifier.sharedBounds(
+            rememberSharedContentState("season_top_bar"),
+            animatedVisibilityScope
+        )
+    ) {
+
+        // Season header content
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Back button row
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onNavigateBack) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
+            // Season Poster
+
+            with(sharedTransitionScope) {
+                NetworkImageLoader(
+                    modifier = Modifier
+                        .size(120.dp, 180.dp)
+                        .sharedBounds(
+                            rememberSharedContentState("season_poster_${seasonName}_${posterPath}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                        )
+                        .shadow(12.dp, MaterialTheme.shapes.medium, clip = true),
+                    imageUrl = ImageUrlBuilder.buildImageUrl(
+                        posterPath,
+                        ImageUrlBuilder.ImageSize.W342
+                    ),
+                    contentDescription = seasonName,
+                    imageKey = "season_poster_${seasonName}_${posterPath}",
+                )
             }
 
-            Spacer(Modifier.height(8.dp))
-
-            // Season header content
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            // Season Info
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
-                // Season Poster
-
-                with(sharedTransitionScope1) {
-                    NetworkImageLoader(
-                        modifier = Modifier
-                            .size(120.dp, 180.dp)
-                            .sharedBounds(
-                                rememberSharedContentState("season_poster_${seasonName}_${posterPath}"),
-                                animatedVisibilityScope = animatedVisibilityScope1,
-                                resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-                            )
-                            .shadow(12.dp, MaterialTheme.shapes.medium, clip = true),
-                        imageUrl = ImageUrlBuilder.buildImageUrl(
-                            posterPath,
-                            ImageUrlBuilder.ImageSize.W342
-                        ),
-                        contentDescription = seasonName,
-                        imageKey = "season_poster_${seasonName}_${posterPath}",
-                    )
-                }
-
-                // Season Info
-                Column(
-                    modifier = Modifier.weight(1f)
+                Text(
+                    text = tvName,
+                    style = MaterialTheme.typography.headlineSmall,
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                AnimatedVisibility(
+                    visible = !isCollapsed
                 ) {
-                    Text(
-                        text = tvName,
-                        style = MaterialTheme.typography.headlineSmall,
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = seasonName,
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.sharedElement(
                             rememberSharedContentState("season_title"),
-                            animatedVisibilityScope = animatedVisibilityScope
+                            animatedVisibilityScope = this
                         )
                     )
+                }
 
-                    seasonDetails?.airDate?.let { airDate ->
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = DateTimeUtils.formatDate(airDate),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                seasonDetails?.airDate?.let { airDate ->
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = DateTimeUtils.formatDate(airDate),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
-
         }
+
     }
+
 }
 
 @Composable

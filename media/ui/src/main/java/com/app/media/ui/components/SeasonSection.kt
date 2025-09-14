@@ -78,12 +78,7 @@ private fun SeasonCard(
         Column(
             modifier = modifier
                 .width(120.dp)
-                .clickable(onClick = onClick)
-                .sharedBounds(
-                    rememberSharedContentState("season_card_${season.posterPath}"),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-                ),
+                .clickable(onClick = onClick),
             verticalArrangement = Arrangement.spacedBy(4.dp),
 
             ) {

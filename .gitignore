@@ -15,4 +15,4 @@
 local.properties
 
 # API Keys and sensitive configuration
-core/network/src/main/java/com/app/core/network/util/Constants.kt
+core/network/src/main/java/com/app/core/utils/constants/Constants.kt

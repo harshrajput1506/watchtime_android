@@ -8,7 +8,7 @@ import com.app.core.network.model.SeasonDetailsResponse
 import com.app.core.network.model.TvShowDetailsResponse
 import com.app.core.network.model.TvShowsListResponse
 import com.app.core.network.model.WatchProvidersResponse
-import com.app.core.network.util.Constants
+import com.app.core.utils.constants.Constants
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Path

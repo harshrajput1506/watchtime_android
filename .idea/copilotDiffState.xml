@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/collections/domain/src/main/java/com/app/collections/domain/use_cases/AlreadyWatchedUseCases.kt">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/collections/domain/src/main/java/com/app/collections/domain/use_cases/AlreadyWatchedUseCases.kt" />
+              <option name="updatedContent" value="package com.app.collections.domain.use_cases&#10;&#10;import com.app.collections.domain.models.ContentMetadata&#10;import com.app.collections.domain.repository.CollectionRepository&#10;import java.util.UUID&#10;import javax.inject.Inject&#10;&#10;class AddToAlreadyWatchedUseCase @Inject constructor(&#10;    private val repository: CollectionRepository&#10;) {&#10;    suspend operator fun invoke(&#10;        userId: UUID,&#10;        tmdbId: Int,&#10;        mediaType: String,&#10;        contentMetadata: ContentMetadata&#10;    ) = repository.addToAlreadyWatched(userId, tmdbId, mediaType, contentMetadata)&#10;}&#10;&#10;class RemoveFromAlreadyWatchedUseCase @Inject constructor(&#10;    private val repository: CollectionRepository&#10;) {&#10;    suspend operator fun invoke(&#10;        userId: UUID,&#10;        tmdbId: Int,&#10;        mediaType: String&#10;    ) = repository.removeFromAlreadyWatched(userId, tmdbId, mediaType)&#10;}&#10;&#10;class IsAlreadyWatchedUseCase @Inject constructor(&#10;    private val repository: CollectionRepository&#10;) {&#10;    suspend operator fun invoke(&#10;        userId: UUID,&#10;        tmdbId: Int,&#10;        mediaType: String&#10;    ) = repository.isAlreadyWatched(userId, tmdbId, mediaType)&#10;}" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/collections/domain/src/main/java/com/app/collections/domain/use_cases/CollectionUseCases.kt">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/collections/domain/src/main/java/com/app/collections/domain/use_cases/CollectionUseCases.kt" />
+              <option name="updatedContent" value="package com.app.collections.domain.use_cases&#10;&#10;import com.app.collections.domain.models.Collection&#10;import com.app.collections.domain.models.ContentMetadata&#10;import com.app.collections.domain.repository.CollectionRepository&#10;import kotlinx.coroutines.flow.Flow&#10;import java.util.UUID&#10;import javax.inject.Inject&#10;&#10;class CreateCollectionUseCase @Inject constructor(&#10;    private val repository: CollectionRepository&#10;) {&#10;    suspend operator fun invoke(&#10;        userId: UUID,&#10;        name: String,&#10;        description: String? = null,&#10;        isPublic: Boolean = false&#10;    ) = repository.createCollection(userId, name, description, isPublic)&#10;}&#10;&#10;class GetUserCollectionsUseCase @Inject constructor(&#10;    private val repository: CollectionRepository&#10;) {&#10;    suspend operator fun invoke(userId: UUID): Flow&lt;List&lt;Collection&gt;&gt; =&#10;        repository.getUserCollections(userId)&#10;}&#10;&#10;class AddToCollectionUseCase @Inject constructor(&#10;    private val repository: CollectionRepository&#10;) {&#10;    suspend operator fun invoke(&#10;        collectionId: UUID,&#10;        tmdbId: Int,&#10;        mediaType: String,&#10;        contentMetadata: ContentMetadata,&#10;        notes: String? = null&#10;    ) = repository.addToCollection(collectionId, tmdbId, mediaType, contentMetadata, notes)&#10;}&#10;&#10;class RemoveFromCollectionUseCase @Inject constructor(&#10;    private val repository: CollectionRepository&#10;) {&#10;    suspend operator fun invoke(&#10;        collectionId: UUID,&#10;        tmdbId: Int,&#10;        mediaType: String&#10;    ) = repository.removeFromCollection(collectionId, tmdbId, mediaType)&#10;}&#10;&#10;class IsInCollectionUseCase @Inject constructor(&#10;    private val repository: CollectionRepository&#10;) {&#10;    suspend operator fun invoke(&#10;        collectionId: UUID,&#10;        tmdbId: Int,&#10;        mediaType: String&#10;    ) = repository.isInCollection(collectionId, tmdbId, mediaType)&#10;}&#10;&#10;class DeleteCollectionUseCase @Inject constructor(&#10;    private val repository: CollectionRepository&#10;) {&#10;    suspend operator fun invoke(collectionId: UUID) = &#10;        repository.deleteCollection(collectionId)&#10;}&#10;&#10;class UpdateCollectionUseCase @Inject constructor(&#10;    private val repository: CollectionRepository&#10;) {&#10;    suspend operator fun invoke(&#10;        collectionId: UUID,&#10;        name: String? = null,&#10;        description: String? = null,&#10;        isPublic: Boolean? = null&#10;    ) = repository.updateCollection(collectionId, name, description, isPublic)&#10;}&#10;&#10;class InitializeDefaultCollectionsUseCase @Inject constructor(&#10;    private val repository: CollectionRepository&#10;) {&#10;    suspend operator fun invoke(userId: UUID) = &#10;        repository.initializeDefaultCollections(userId)&#10;}" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/collections/domain/src/main/java/com/app/collections/domain/use_cases/WatchlistUseCases.kt">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/collections/domain/src/main/java/com/app/collections/domain/use_cases/WatchlistUseCases.kt" />
+              <option name="updatedContent" value="// This file has been removed - using repository directly" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

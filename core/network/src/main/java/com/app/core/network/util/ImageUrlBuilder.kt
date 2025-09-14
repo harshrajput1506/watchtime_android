@@ -1,5 +1,7 @@
 package com.app.core.network.util
 
+import com.app.core.utils.constants.Constants
+
 object ImageUrlBuilder {
 
     enum class ImageSize(val path: String) {

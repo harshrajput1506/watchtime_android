@@ -24,9 +24,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -126,7 +128,8 @@ fun MediaDetailsScreen(
                                 )
                             },
                             sharedTransitionScope = sharedTransitionScope,
-                            animatedVisibilityScope = animatedVisibilityScope
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            viewModel = viewModel
                         )
                     }
 
@@ -244,8 +247,11 @@ private fun MediaDetailsSection(
     mediaType: String,
     onSeasonClick: (String?, Int, String) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    viewModel: MediaDetailsViewModel
 ) {
+    val isInWatchlist by viewModel.isInWatchlist.collectAsStateWithLifecycle()
+    val isAlreadyWatched by viewModel.isAlreadyWatched.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier
@@ -297,14 +303,12 @@ private fun MediaDetailsSection(
         Spacer(Modifier.height(16.dp))
 
         // Actions
-        MediaActionButtons()
-
-        Spacer(Modifier.height(24.dp))
-
-        // Overview
-        Text(
-            mediaDetails.overview,
-            style = MaterialTheme.typography.bodyMedium
+        MediaActionButtons(
+            isInWatchlist = isInWatchlist,
+            isAlreadyWatched = isAlreadyWatched,
+            onToggleWatchlist = { viewModel.toggleWatchlist() },
+            onToggleAlreadyWatched = { viewModel.toggleAlreadyWatched() },
+            onShowAddToCollection = { viewModel.showAddToCollectionDialog() }
         )
 
         Spacer(Modifier.height(16.dp))
@@ -343,46 +347,70 @@ private fun MediaDetailsSection(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MediaActionButtons() {
+private fun MediaActionButtons(
+    isInWatchlist: Boolean,
+    isAlreadyWatched: Boolean,
+    onToggleWatchlist: () -> Unit,
+    onToggleAlreadyWatched: () -> Unit,
+    onShowAddToCollection: () -> Unit
+) {
 
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+        verticalAlignment = Alignment.CenterVertically ) {
+
         FilledIconButton(
-            onClick = { /* TODO: Implement Watch Action */ }, colors =
+            onClick = onToggleWatchlist,
+            colors =
                 IconButtonDefaults.filledIconButtonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer
                 )
         ) {
+        // Watchlist button
             Icon(
-                painter = painterResource(R.drawable.ic_bookmar_add),
-                contentDescription = "Add to Collection",
+                contentDescription = if (isInWatchlist) "Remove from Watchlist" else "Add to Watchlist",
+                imageVector = if (isInWatchlist) Icons.Rounded.Check else Icons.Rounded.Add,
+                tint = if (isInWatchlist)
+                    MaterialTheme.colorScheme.onPrimary
+                else
+                    MaterialTheme.colorScheme.onSurface,
             )
         }
         FilledIconButton(
-            onClick = { /* TODO: Implement Watch Action */ },
+            onClick =onShowAddToCollection,
             colors = IconButtonDefaults.filledIconButtonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                containerColor = if (isInWatchlist)
+                    MaterialTheme.colorScheme.onPrimary
+                else
+                    MaterialTheme.colorScheme.onSurface
             )
         ) {
+
+        // Add to Collection button
             Icon(
-                imageVector = Icons.Rounded.Add,
                 contentDescription = "Add to Collection",
+                painter = painterResource(id = R.drawable.ic_bookmar_add),
+                tint = MaterialTheme.colorScheme.onSurface
             )
         }
         Button(
-            onClick = { /* TODO: Implement Watch Action */ },
+            onClick = onToggleAlreadyWatched,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainer
+
             )
         ) {
+
+        // Already Watched button
             Text(
-                "Already Watched?",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurface
+                text = if (isAlreadyWatched) "Already Watched" else "Already Watched?",
+                color = if (isAlreadyWatched)
+                    MaterialTheme.colorScheme.onPrimary
+                else
+                    MaterialTheme.colorScheme.onSurface
             )
         }
 

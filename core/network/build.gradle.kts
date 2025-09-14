@@ -37,6 +37,9 @@ dependencies {
     // Core Android
     implementation(libs.androidx.core.ktx)
 
+    // Core utils module
+    implementation(project(":core:utils"))
+
     // Networking
     implementation(libs.retrofit)
     implementation(libs.retrofit.kotlinx.serialization)

@@ -2,8 +2,10 @@ package com.app.media.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.collections.domain.repository.CollectionRepository
 import com.app.media.domain.repository.MediaRepository
 import com.app.media.ui.state.MediaDetailsState
+import com.app.media.ui.utils.toContentMetadata
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,14 +15,23 @@ import kotlinx.coroutines.launch
 class MediaDetailsViewModel(
     private val mediaId: Int,
     private val mediaType: String,
-    private val mediaRepository: MediaRepository
+    private val mediaRepository: MediaRepository,
+    private val collectionRepository: CollectionRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<MediaDetailsState>(MediaDetailsState.Loading)
     val state: StateFlow<MediaDetailsState> = _state.asStateFlow()
 
+    // Collections state
+    private val _isInWatchlist = MutableStateFlow(false)
+    val isInWatchlist: StateFlow<Boolean> = _isInWatchlist.asStateFlow()
+
+    private val _isAlreadyWatched = MutableStateFlow(false)
+    val isAlreadyWatched: StateFlow<Boolean> = _isAlreadyWatched.asStateFlow()
+
     init {
         loadMediaDetails(mediaId, mediaType)
+        loadCollectionStates()
     }
 
     private fun loadMediaDetails(mediaId: Int, mediaType: String) {
@@ -75,6 +86,77 @@ class MediaDetailsViewModel(
                 _state.value = MediaDetailsState.Error(e.message ?: "Unknown error occurred")
             }
         }
+    }
+
+    private fun loadCollectionStates() {
+        viewModelScope.launch {
+            try {
+                // Check if the media is in the watchlist
+                collectionRepository.isInWatchlist(mediaId, mediaType)
+                    .collect { isInWatchlist ->
+                        _isInWatchlist.value = isInWatchlist
+                    }
+            } catch (_: Exception) {
+                // Handle error silently
+            }
+        }
+
+        viewModelScope.launch {
+            try {
+                // Check if the media is already watched
+                collectionRepository.isAlreadyWatched(mediaId, mediaType)
+                    .collect { isAlreadyWatched ->
+                        _isAlreadyWatched.value = isAlreadyWatched
+                    }
+            } catch (_: Exception) {
+                // Handle error silently
+            }
+        }
+    }
+
+    // Collection action methods
+    fun toggleWatchlist() {
+        viewModelScope.launch {
+            val currentState = _state.value
+            if (currentState is MediaDetailsState.Success) {
+                try {
+                    val contentMetadata = currentState.mediaDetails.toContentMetadata(mediaType)
+
+                    if (_isInWatchlist.value) {
+                        collectionRepository.removeFromWatchlist("default_user", mediaId, mediaType)
+                    } else {
+                        collectionRepository.addToWatchlist("default_user", mediaId, mediaType, contentMetadata)
+                    }
+                } catch (_: Exception) {
+                    // Handle error - could show toast
+                }
+            }
+        }
+    }
+
+    fun toggleAlreadyWatched() {
+        viewModelScope.launch {
+            val currentState = _state.value
+            if (currentState is MediaDetailsState.Success) {
+                try {
+                    val contentMetadata = currentState.mediaDetails.toContentMetadata(mediaType)
+
+                    if (_isAlreadyWatched.value) {
+                        collectionRepository.removeFromAlreadyWatched("default_user", mediaId, mediaType)
+                    } else {
+                        collectionRepository.addToAlreadyWatched("default_user", mediaId, mediaType, contentMetadata)
+                    }
+                } catch (_: Exception) {
+                    // Handle error - could show toast
+                }
+            }
+        }
+    }
+
+    fun showAddToCollectionDialog() {
+        // This method will be called when the "Add to Collection" button is clicked
+        // You can implement a dialog to show custom collections here
+        // For now, this is a placeholder
     }
 
     fun loadSeasonDetails(tvId: Int, seasonNumber: Int) {

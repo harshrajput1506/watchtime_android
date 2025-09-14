@@ -1,7 +1,7 @@
 package com.app.core.network.di
 
 import com.app.core.network.api.TMDBApiService
-import com.app.core.network.util.Constants
+import com.app.core.utils.constants.Constants
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType

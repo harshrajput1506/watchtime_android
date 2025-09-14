@@ -36,6 +36,7 @@ dependencies {
 
     //core dependencies
     implementation(project(":core:utils"))
+    implementation(project(":core:room"))
 
     // domain dependencies
     implementation(project(":collections:domain"))
@@ -47,8 +48,12 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // firebase firestore
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.firestore)
-    implementation(libs.firebase.auth)  // firebase auth
+    // room database
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+
+    // Dependency Injection
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
 }

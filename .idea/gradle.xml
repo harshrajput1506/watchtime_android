@@ -18,6 +18,7 @@
             <option value="$PROJECT_DIR$/collections" />
             <option value="$PROJECT_DIR$/collections/data" />
             <option value="$PROJECT_DIR$/collections/domain" />
+            <option value="$PROJECT_DIR$/collections/ui" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core/home" />
             <option value="$PROJECT_DIR$/core/navigation" />

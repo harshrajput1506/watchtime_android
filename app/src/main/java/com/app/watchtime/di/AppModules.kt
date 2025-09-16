@@ -11,6 +11,7 @@ import com.app.media.data.di.mediaDataModule
 import com.app.media.ui.di.mediaUiModule
 import com.app.popular.data.di.popularDataModule
 import com.app.popular.ui.di.popularUiModule
+import com.collections.ui.di.collectionsUiModule
 
 val appModules = listOf(
     authDataModule,
@@ -24,4 +25,5 @@ val appModules = listOf(
     collectionDataModule,
     mediaDataModule,
     mediaUiModule,
+    collectionsUiModule
 )

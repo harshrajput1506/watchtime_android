@@ -68,6 +68,7 @@ dependencies {
 
     // collections modules
     implementation(project(":collections:data"))
+    implementation(project(":collections:ui"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

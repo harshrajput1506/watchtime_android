@@ -2,15 +2,14 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    kotlin("plugin.serialization") version "2.0.21"
 }
 
 android {
-    namespace = "com.app.core.home"
+    namespace = "com.collections.ui"
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 26
+        minSdk = 24
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -36,14 +35,15 @@ android {
 
 dependencies {
 
-    implementation(project(":popular:ui"))
-    implementation(project(":discover:ui"))
-    implementation(project(":collections:ui"))
+    // domain modules
+    implementation(project(":collections:domain"))
+    implementation(project(":auth:domain"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:network"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.androidx.runtime)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -57,8 +57,18 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // Jetpack Compose navigation integration
-    implementation(libs.androidx.navigation.compose)
-    // JSON serialization library, works with the Kotlin serialization plugin
-    implementation(libs.kotlinx.serialization.json)
+
+    // Animation dependencies
+    implementation(libs.androidx.compose.animation)
+    implementation(libs.androidx.compose.animation.core)
+
+    // coil for image loading
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
+    // koin
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.androidx.viewmodel)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.android)
 }

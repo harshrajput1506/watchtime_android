@@ -72,7 +72,6 @@ import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun DiscoverScreen(
     modifier: Modifier = Modifier,

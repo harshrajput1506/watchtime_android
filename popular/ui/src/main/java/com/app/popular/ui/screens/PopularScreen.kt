@@ -193,22 +193,24 @@ fun UserDisplayBar(
 ) {
     Row(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(
-            modifier = Modifier.weight(0.8f)
+            modifier = Modifier
+                .weight(0.8f)
+                .padding(12.dp)
         ) {
             Text(
-                "Hello \uD83D\uDC4B", style = MaterialTheme.typography.titleMedium.copy(
+                "Hello \uD83D\uDC4B", style = MaterialTheme.typography.titleSmall.copy(
                     color = MaterialTheme.colorScheme.onSurface
                 )
             )
             Text(
                 text = user.name ?: "User",
-                style = MaterialTheme.typography.displaySmall.copy(
+                style = MaterialTheme.typography.headlineSmall.copy(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 ),
                 maxLines = 2,

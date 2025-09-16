@@ -23,6 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.app.discover.ui.screens.DiscoverScreen
 import com.app.popular.ui.screens.PopularScreen
+import com.collections.ui.screens.CollectionsScreen
 import kotlinx.serialization.Serializable
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -32,7 +33,7 @@ fun HomeNavigation(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     modifier: Modifier = Modifier,
-    navigateToMediaDetails: (Int, String, String?, String) -> Unit
+    navigateToMediaDetails: (tmdbId: Int, name: String, posterUrl: String?, key: String) -> Unit
 ) {
 
     NavHost(
@@ -69,7 +70,12 @@ fun HomeNavigation(
         }
 
         composable<HomeDestination.Collections> {
-            DemoScreen(modifier, "Collections Screen")
+            CollectionsScreen(
+                modifier = modifier,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope,
+                onNavigateToMediaDetails = navigateToMediaDetails
+            )
         }
 
         composable<HomeDestination.Profile> {

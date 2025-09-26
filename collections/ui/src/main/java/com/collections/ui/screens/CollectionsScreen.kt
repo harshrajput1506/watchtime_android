@@ -106,7 +106,7 @@ fun CollectionsScreen(
                 for (collection in defaultCollections) {
                     CollectionsSection(
                         label = collection.name,
-                        collectionItems = collection.items,
+                        collectionItems = collection.items.reversed(),
                         isLoading = isLoading,
                         onCollectionClicked = onNavigateToMediaDetails,
                         sharedTransitionScope = sharedTransitionScope,
@@ -119,7 +119,7 @@ fun CollectionsScreen(
                 if (collection.items.isNotEmpty()) {
                     CollectionsSection(
                         label = collection.name.replaceFirstChar { it.uppercase() },
-                        collectionItems = collection.items,
+                        collectionItems = collection.items.reversed(),
                         isLoading = isLoading,
                         onCollectionClicked = onNavigateToMediaDetails,
                         sharedTransitionScope = sharedTransitionScope,

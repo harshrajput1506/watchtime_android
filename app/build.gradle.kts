@@ -70,6 +70,10 @@ dependencies {
     implementation(project(":collections:data"))
     implementation(project(":collections:ui"))
 
+    // profile modules
+    implementation(project(":profile:data"))
+    implementation(project(":profile:ui"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -95,4 +99,6 @@ dependencies {
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.android)
     implementation(libs.koin.core)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.androidx.viewmodel)
 }

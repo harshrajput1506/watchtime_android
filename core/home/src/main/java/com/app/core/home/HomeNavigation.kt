@@ -21,8 +21,10 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.app.core.ui.theme.ThemeViewModel
 import com.app.discover.ui.screens.DiscoverScreen
 import com.app.popular.ui.screens.PopularScreen
+import com.app.profile.ui.screens.ProfileScreen
 import com.collections.ui.screens.CollectionsScreen
 import kotlinx.serialization.Serializable
 
@@ -30,9 +32,11 @@ import kotlinx.serialization.Serializable
 @Composable
 fun HomeNavigation(
     navController: NavHostController,
+    themeViewModel: ThemeViewModel,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     modifier: Modifier = Modifier,
+    navigateToAuth: () -> Unit,
     navigateToMediaDetails: (tmdbId: Int, name: String, posterUrl: String?, key: String) -> Unit
 ) {
 
@@ -79,7 +83,12 @@ fun HomeNavigation(
         }
 
         composable<HomeDestination.Profile> {
-            DemoScreen(modifier, "Profile Screen")
+            ProfileScreen(
+                modifier = modifier,
+                themeViewModel = themeViewModel
+            ) {
+                navigateToAuth()
+            }
         }
     }
 

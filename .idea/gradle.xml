@@ -38,6 +38,10 @@
             <option value="$PROJECT_DIR$/popular/data" />
             <option value="$PROJECT_DIR$/popular/domain" />
             <option value="$PROJECT_DIR$/popular/ui" />
+            <option value="$PROJECT_DIR$/profile" />
+            <option value="$PROJECT_DIR$/profile/data" />
+            <option value="$PROJECT_DIR$/profile/domain" />
+            <option value="$PROJECT_DIR$/profile/ui" />
           </set>
         </option>
       </GradleProjectSettings>

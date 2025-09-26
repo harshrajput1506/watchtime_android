@@ -11,6 +11,7 @@ import com.app.auth.ui.screens.AuthScreen
 import com.app.auth.ui.states.AuthState
 import com.app.auth.ui.viewmodels.AuthViewModel
 import com.app.core.home.HomeScreen
+import com.app.core.ui.theme.ThemeViewModel
 import com.app.media.ui.screens.MediaDetailsScreen
 import com.app.media.ui.screens.SeasonsScreen
 import com.app.media.ui.viewmodel.MediaDetailsViewModel
@@ -20,6 +21,7 @@ import org.koin.core.parameter.parametersOf
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun AppNavigation(
+    themeViewModel: ThemeViewModel,
     authViewModel: AuthViewModel = koinViewModel(),
 ) {
     val navController = rememberNavController()
@@ -37,6 +39,14 @@ fun AppNavigation(
                 HomeScreen(
                     sharedTransitionScope = this@SharedTransitionLayout,
                     animatedVisibilityScope = this,
+                    navigateToAuth = {
+                        navController.navigate(Screen.Auth) {
+                            popUpTo(Screen.Home) {
+                                inclusive = true
+                            }
+                        }
+                    },
+                    themeViewModel = themeViewModel,
                     navigateToMediaDetails = { mediaId, mediaType, posterUrl, posterKey ->
                         navController.navigate(
                             Screen.MediaDetails(

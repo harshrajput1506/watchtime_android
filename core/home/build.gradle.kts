@@ -39,6 +39,8 @@ dependencies {
     implementation(project(":popular:ui"))
     implementation(project(":discover:ui"))
     implementation(project(":collections:ui"))
+    implementation(project(":profile:ui"))
+    implementation(project(":core:ui"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

@@ -17,12 +17,15 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.app.core.ui.theme.ThemeViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HomeScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
+    themeViewModel: ThemeViewModel,
+    navigateToAuth: () -> Unit,
     navigateToMediaDetails: (Int, String, String?, String) -> Unit
 ) {
     val navController = rememberNavController()
@@ -75,7 +78,9 @@ fun HomeScreen(
             navController = navController,
             sharedTransitionScope = sharedTransitionScope,
             animatedVisibilityScope = animatedVisibilityScope,
-            navigateToMediaDetails = navigateToMediaDetails
+            navigateToMediaDetails = navigateToMediaDetails,
+            navigateToAuth = navigateToAuth,
+            themeViewModel = themeViewModel
         )
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 
 
 private val lightScheme = lightColorScheme(
@@ -236,11 +237,12 @@ private val highContrastDarkColorScheme = darkColorScheme(
 
 @Composable
 fun WatchTimeTheme(
-    darkTheme: Boolean = true, //isSystemInDarkTheme(),
+    viewModel: ThemeViewModel,
     content: @Composable() () -> Unit
 ) {
+    val darkTheme = viewModel.isDarkTheme.collectAsState()
     val colorScheme = when {
-        darkTheme -> darkScheme
+        darkTheme.value -> darkScheme
         else -> lightScheme
     }
 
@@ -251,4 +253,3 @@ fun WatchTimeTheme(
         content = content
     )
 }
-

@@ -55,6 +55,14 @@ dependencies {
 
     implementation(libs.androidx.ui.text.google.fonts)
 
+    // Koin DI
+    // Dependency Injection
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.androidx.viewmodel)
+
     // coil for image loading
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)

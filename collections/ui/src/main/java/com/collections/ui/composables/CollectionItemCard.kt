@@ -3,7 +3,7 @@ package com.collections.ui.composables
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -35,48 +35,66 @@ fun CollectionItemCard(
     width: Dp = 120.dp,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
+    extendedSharedTransitionScope: SharedTransitionScope,
+    extendedAnimatedVisibilityScope: AnimatedVisibilityScope,
     onClick: (tmdbId: Int, mediaType: String, posterUrl: String?, key: String) -> Unit,
+    onLongTap: (item: CollectionItem) -> Unit
 ) {
     val cardKey = "collection_card_${collectionItem.id}"
+    val extendedCardKey = "extended_collection_card${collectionItem.id}"
     val posterUrl = ImageUrlBuilder.buildPosterUrl(collectionItem.content.posterPath)
 
-    with(sharedTransitionScope) {
+
+    with(extendedSharedTransitionScope) {
         Column(
             modifier = modifier
                 .width(width)
                 .aspectRatio(0.52f)
-                .clickable {
-                    onClick(
-                        collectionItem.tmdbId,
-                        collectionItem.mediaType,
-                        posterUrl,
-                        cardKey
-                    )
-                }
+                .combinedClickable(
+                    onLongClick = {
+                        onLongTap(collectionItem)
+                    },
+                    onClick = {
+                        onClick(
+                            collectionItem.tmdbId,
+                            collectionItem.mediaType,
+                            posterUrl,
+                            cardKey
+                        )
+                    }
+                )
+                .sharedBounds(
+                    rememberSharedContentState(extendedCardKey),
+                    animatedVisibilityScope = extendedAnimatedVisibilityScope,
+                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                )
 
         ) {
-            NetworkImageLoader(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(0.65f)
-                    .sharedBounds(
-                        rememberSharedContentState(cardKey),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
-                    )
-                    .shadow(4.dp, MaterialTheme.shapes.medium, clip = true),
-                imageUrl = posterUrl,
-                imageKey = cardKey,
-                contentDescription = collectionItem.content.title,
-            )
+            with(sharedTransitionScope) {
+                NetworkImageLoader(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(0.65f)
+                        .sharedBounds(
+                            rememberSharedContentState(cardKey),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds
+                        )
+                        .shadow(4.dp, MaterialTheme.shapes.medium, clip = true),
+                    imageUrl = posterUrl,
+                    imageKey = cardKey,
+                    contentDescription = collectionItem.content.title,
+                )
 
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = collectionItem.content.title,
-                style = MaterialTheme.typography.titleSmall,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = collectionItem.content.title,
+                    style = MaterialTheme.typography.titleSmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+
 
         }
     }

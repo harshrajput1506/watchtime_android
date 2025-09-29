@@ -43,6 +43,7 @@ dependencies {
     implementation(project(":media:domain"))
     implementation(project(":auth:domain"))
     implementation(project(":collections:domain"))
+    implementation(project(":collections:ui"))
     implementation(project(":core:ui"))
     implementation(project(":core:utils"))
 

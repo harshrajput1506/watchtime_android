@@ -1,8 +1,13 @@
 package com.collections.ui.composables
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,12 +25,14 @@ import com.app.collections.domain.models.CollectionItem
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun CollectionsSection(
+fun SharedTransitionScope.CollectionsSection(
     modifier: Modifier = Modifier,
     label: String = "My Collections",
     collectionItems: List<CollectionItem> = emptyList(),
     onCollectionClicked: (tmdbId: Int, name: String, posterUrl: String?, key: String) -> Unit,
+    onLongClick: (item: CollectionItem) -> Unit,
     isLoading: Boolean = false,
+    selectedItem: CollectionItem?,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
@@ -57,12 +64,22 @@ fun CollectionsSection(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     items(collectionItems.size) { index ->
-                        CollectionItemCard(
-                            collectionItem = collectionItems[index],
-                            onClick = onCollectionClicked,
-                            sharedTransitionScope = sharedTransitionScope,
-                            animatedVisibilityScope = animatedVisibilityScope
-                        )
+                        AnimatedVisibility(
+                            visible = collectionItems[index] != selectedItem,
+                            enter = fadeIn() + scaleIn(),
+                            exit = fadeOut() + scaleOut(),
+                            modifier = Modifier.animateItem()
+                        ) {
+                            CollectionItemCard(
+                                collectionItem = collectionItems[index],
+                                onClick = onCollectionClicked,
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                extendedSharedTransitionScope = this@CollectionsSection,
+                                extendedAnimatedVisibilityScope = this,
+                                onLongTap = onLongClick
+                            )
+                        }
                     }
                 }
             }

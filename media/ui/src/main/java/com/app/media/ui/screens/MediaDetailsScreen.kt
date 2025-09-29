@@ -36,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,7 +60,10 @@ import com.app.media.ui.components.MediaShimmerPlaceHolder
 import com.app.media.ui.components.SeasonsSection
 import com.app.media.ui.components.UserScoreBar
 import com.app.media.ui.state.MediaDetailsState
+import com.app.media.ui.utils.toContentMetadata
 import com.app.media.ui.viewmodel.MediaDetailsViewModel
+import com.collections.ui.viewModels.CollectionsViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -72,15 +76,20 @@ fun MediaDetailsScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: MediaDetailsViewModel,
+    collectionsViewModel: CollectionsViewModel = koinViewModel<CollectionsViewModel>(),
     onNavigateBack: () -> Unit = {},
     onNavigateToSeason: (posterPath: String?, tvId: Int, seasonNumber: Int, seasonName: String, tvName: String) -> Unit = { _, _, _, _, _ -> }
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
-    val showCollectionSheet by viewModel.showCollectionBottomSheet.collectAsStateWithLifecycle()
-    val isCreatingCollection by viewModel.isCreatingCollection.collectAsStateWithLifecycle()
-    val availableCollections by viewModel.availableCollections.collectAsStateWithLifecycle()
-    val selectedCollections by viewModel.selectedCollections.collectAsStateWithLifecycle()
+    val showCollectionSheet by collectionsViewModel.showCollectionBottomSheet.collectAsStateWithLifecycle()
+    val isCreatingCollection by collectionsViewModel.isCreatingCollection.collectAsStateWithLifecycle()
+    val availableCollections by collectionsViewModel.availableCollections.collectAsStateWithLifecycle()
+    val selectedCollections by collectionsViewModel.selectedCollections.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        collectionsViewModel.loadCollectionStates(mediaId, mediaType)
+    }
 
     AddToCollectionBottomSheet(
         showBottomSheet = showCollectionSheet,
@@ -88,11 +97,20 @@ fun MediaDetailsScreen(
         selectedCollections = selectedCollections,
         isCreatingCollection = isCreatingCollection,
         onToggleCollection = { collectionId ->
-            viewModel.toggleCollectionSelection(collectionId)
+            if (state is MediaDetailsState.Success) {
+                val contentMetadata =
+                    (state as MediaDetailsState.Success).mediaDetails.toContentMetadata(mediaType)
+                collectionsViewModel.toggleCollectionSelection(
+                    collectionId,
+                    mediaId,
+                    mediaType,
+                    contentMetadata
+                )
+            }
         },
-        onDismiss = { viewModel.hideCollectionBottomSheet() }, // dismiss
+        onDismiss = { collectionsViewModel.hideCollectionBottomSheet() }, // dismiss
         onCreateCollection = { name, description ->
-            viewModel.createNewCollection(name, description, false)
+            collectionsViewModel.createNewCollection(name, description, false)
         },
     )
 
@@ -142,7 +160,7 @@ fun MediaDetailsScreen(
                             },
                             sharedTransitionScope = sharedTransitionScope,
                             animatedVisibilityScope = animatedVisibilityScope,
-                            viewModel = viewModel
+                            collectionsViewModel = collectionsViewModel
                         )
                     }
 
@@ -261,10 +279,10 @@ private fun MediaDetailsSection(
     onSeasonClick: (String?, Int, String) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    viewModel: MediaDetailsViewModel
+    collectionsViewModel: CollectionsViewModel
 ) {
-    val isInWatchlist by viewModel.isInWatchlist.collectAsStateWithLifecycle()
-    val isAlreadyWatched by viewModel.isAlreadyWatched.collectAsStateWithLifecycle()
+    val isInWatchlist by collectionsViewModel.isInWatchlist.collectAsStateWithLifecycle()
+    val isAlreadyWatched by collectionsViewModel.isAlreadyWatched.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier
@@ -319,9 +337,28 @@ private fun MediaDetailsSection(
         MediaActionButtons(
             isInWatchlist = isInWatchlist,
             isAlreadyWatched = isAlreadyWatched,
-            onToggleWatchlist = { viewModel.toggleWatchlist() },
-            onToggleAlreadyWatched = { viewModel.toggleAlreadyWatched() },
-            onShowAddToCollection = { viewModel.showAddToCollectionDialog() }
+            onToggleWatchlist = {
+                val contentMetadata = mediaDetails.toContentMetadata(mediaType)
+                collectionsViewModel.toggleWatchlist(
+                    mediaId = mediaDetails.id,
+                    mediaType = mediaType,
+                    contentMetadata = contentMetadata
+                )
+            },
+            onToggleAlreadyWatched = {
+                val contentMetadata = mediaDetails.toContentMetadata(mediaType)
+                collectionsViewModel.toggleAlreadyWatched(
+                    mediaId = mediaDetails.id,
+                    mediaType = mediaType,
+                    contentMetadata = contentMetadata
+                )
+            },
+            onShowAddToCollection = {
+                collectionsViewModel.showAddToCollectionDialog(
+                    mediaDetails.id,
+                    mediaType
+                )
+            }
         )
 
         Spacer(Modifier.height(16.dp))
